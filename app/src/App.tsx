@@ -38,6 +38,7 @@ function App() {
       >
         <input
           id="greet-input"
+          aria-label="Name to greet"
           onChange={(e) => setName(e.currentTarget.value)}
           placeholder="Enter a name..."
         />
