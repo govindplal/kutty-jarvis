@@ -20,6 +20,7 @@ pub fn run() {
             app.manage(capture::LatestScreenshot::default());
             app.manage(audio::ActiveRecorder::default());
             app.manage(audio::LatestRecording::default());
+            std::thread::spawn(audio::warm_up);
             tray::create(app)?;
             hotkey::register(app)?;
             Ok(())

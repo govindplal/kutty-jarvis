@@ -27,6 +27,9 @@ pub const RECORDING_FAILED_EVENT: &str = "recording-failed";
 struct RecordingFinished {
     duration_ms: u64,
     wav_bytes: usize,
+    held_ms: u64,
+    ready_ms: u64,
+    first_sample_ms: Option<u64>,
 }
 
 #[derive(Serialize, Clone)]
@@ -114,6 +117,9 @@ fn finish_recording_in_background(app: AppHandle) {
             let payload = RecordingFinished {
                 duration_ms: recording.duration_ms,
                 wav_bytes: recording.wav.len(),
+                held_ms: recording.held_ms,
+                ready_ms: recording.ready_ms,
+                first_sample_ms: recording.first_sample_ms,
             };
             if let Some(latest) = app.try_state::<LatestRecording>() {
                 *latest
