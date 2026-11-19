@@ -1,3 +1,9 @@
+mod hotkey;
+mod push_to_talk;
+mod tray;
+
+use tauri::WindowEvent;
+
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -8,6 +14,18 @@ fn greet(name: &str) -> String {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .setup(|app| {
+            tray::create(app)?;
+            hotkey::register(app)?;
+            Ok(())
+        })
+        .on_window_event(|window, event| {
+            // Live in the tray: closing the window hides it; Quit is in the tray menu.
+            if let WindowEvent::CloseRequested { api, .. } = event {
+                api.prevent_close();
+                let _ = window.hide();
+            }
+        })
         .invoke_handler(tauri::generate_handler![greet])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
