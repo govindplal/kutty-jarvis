@@ -1,3 +1,4 @@
+mod audio;
 mod capture;
 mod hotkey;
 mod push_to_talk;
@@ -17,6 +18,8 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             app.manage(capture::LatestScreenshot::default());
+            app.manage(audio::ActiveRecorder::default());
+            app.manage(audio::LatestRecording::default());
             tray::create(app)?;
             hotkey::register(app)?;
             Ok(())
