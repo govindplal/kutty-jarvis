@@ -1,0 +1,16 @@
+{
+  "name": "kutty-jarvis",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Free, open-source AI buddy for your PC",
+  "license": "MIT",
+  "scripts": {
+    "prepare": "husky",
+    "commitlint": "commitlint"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "husky": "^9.1.7"
+  }
+}
