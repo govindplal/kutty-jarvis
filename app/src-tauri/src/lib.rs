@@ -1,8 +1,9 @@
+mod capture;
 mod hotkey;
 mod push_to_talk;
 mod tray;
 
-use tauri::WindowEvent;
+use tauri::{Manager, WindowEvent};
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
@@ -15,6 +16,7 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
+            app.manage(capture::LatestScreenshot::default());
             tray::create(app)?;
             hotkey::register(app)?;
             Ok(())
