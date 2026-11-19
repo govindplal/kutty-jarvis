@@ -8,6 +8,7 @@ use std::io::Cursor;
 use std::sync::mpsc::{self, Receiver, Sender};
 use std::sync::{Arc, Mutex};
 use std::thread::{self, JoinHandle};
+use std::time::Instant;
 
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 use cpal::{FromSample, SampleFormat, SizedSample};
@@ -26,29 +27,43 @@ pub struct ActiveRecorder(pub Mutex<Option<Recorder>>);
 pub struct Recording {
     pub duration_ms: u64,
     pub wav: Vec<u8>,
+    /// Time from key press to key release.
+    pub held_ms: u64,
+    /// Time from key press until the stream reported it was running.
+    pub ready_ms: u64,
+    /// Time from key press until the first audio sample arrived, if any did.
+    pub first_sample_ms: Option<u64>,
 }
 
 struct RawAudio {
     samples: Vec<f32>,
     channels: u16,
     sample_rate: u32,
+    ready_at: Instant,
+    first_sample_at: Option<Instant>,
 }
 
 /// Owns the microphone thread. Dropping the stream stops capture.
 pub struct Recorder {
     stop: Sender<()>,
     handle: JoinHandle<Result<RawAudio, String>>,
+    started_at: Instant,
 }
 
 impl Recorder {
     /// Opens the default input device and starts capturing. Returns once the
     /// stream is running, or with the reason it could not start.
     pub fn start() -> Result<Self, String> {
+        let started_at = Instant::now();
         let (stop, stop_rx) = mpsc::channel::<()>();
         let (ready_tx, ready_rx) = mpsc::channel::<Result<(), String>>();
         let handle = thread::spawn(move || capture_until_stopped(stop_rx, ready_tx));
         match ready_rx.recv() {
-            Ok(Ok(())) => Ok(Self { stop, handle }),
+            Ok(Ok(())) => Ok(Self {
+                stop,
+                handle,
+                started_at,
+            }),
             Ok(Err(message)) => {
                 let _ = handle.join();
                 Err(message)
@@ -59,6 +74,7 @@ impl Recorder {
 
     /// Stops capturing and returns the recording as 16 kHz mono WAV.
     pub fn finish(self) -> Result<Recording, String> {
+        let released_at = Instant::now();
         let _ = self.stop.send(());
         let raw = self
             .handle
@@ -68,7 +84,14 @@ impl Recorder {
         let resampled = resample_linear(&mono, raw.sample_rate, TARGET_SAMPLE_RATE);
         let duration_ms = (resampled.len() as u64 * 1000) / u64::from(TARGET_SAMPLE_RATE);
         let wav = encode_wav_16k_mono(&to_pcm16(&resampled))?;
-        Ok(Recording { duration_ms, wav })
+        let since_start = |at: Instant| at.duration_since(self.started_at).as_millis() as u64;
+        Ok(Recording {
+            duration_ms,
+            wav,
+            held_ms: since_start(released_at),
+            ready_ms: since_start(raw.ready_at),
+            first_sample_ms: raw.first_sample_at.map(since_start),
+        })
     }
 }
 
@@ -95,12 +118,19 @@ fn capture_until_stopped(
     };
 
     let samples = Arc::new(Mutex::new(Vec::<f32>::new()));
+    let first_sample_at = Arc::new(Mutex::new(None::<Instant>));
     let format = supported.sample_format();
     let config = supported.config();
     let stream = match format {
-        SampleFormat::F32 => build_stream::<f32>(&device, &config, samples.clone()),
-        SampleFormat::I16 => build_stream::<i16>(&device, &config, samples.clone()),
-        SampleFormat::U16 => build_stream::<u16>(&device, &config, samples.clone()),
+        SampleFormat::F32 => {
+            build_stream::<f32>(&device, &config, samples.clone(), first_sample_at.clone())
+        }
+        SampleFormat::I16 => {
+            build_stream::<i16>(&device, &config, samples.clone(), first_sample_at.clone())
+        }
+        SampleFormat::U16 => {
+            build_stream::<u16>(&device, &config, samples.clone(), first_sample_at.clone())
+        }
         other => Err(format!("unsupported microphone sample format: {other:?}")),
     };
     let stream = match stream.and_then(|stream| {
@@ -115,6 +145,7 @@ fn capture_until_stopped(
             return Err(message);
         }
     };
+    let ready_at = Instant::now();
     let _ = ready_tx.send(Ok(()));
 
     // Block until the hotkey is released, then drop the stream to close the microphone.
@@ -125,10 +156,13 @@ fn capture_until_stopped(
         .lock()
         .map(|guard| guard.clone())
         .unwrap_or_default();
+    let first_sample_at = first_sample_at.lock().ok().and_then(|guard| *guard);
     Ok(RawAudio {
         samples,
         channels: config.channels,
         sample_rate: config.sample_rate.0,
+        ready_at,
+        first_sample_at,
     })
 }
 
@@ -136,6 +170,7 @@ fn build_stream<T>(
     device: &cpal::Device,
     config: &cpal::StreamConfig,
     buffer: Arc<Mutex<Vec<f32>>>,
+    first_sample_at: Arc<Mutex<Option<Instant>>>,
 ) -> Result<cpal::Stream, String>
 where
     T: SizedSample + Send + 'static,
@@ -145,6 +180,12 @@ where
         .build_input_stream(
             config,
             move |data: &[T], _: &cpal::InputCallbackInfo| {
+                if let Ok(mut first) = first_sample_at.lock()
+                    && first.is_none()
+                    && !data.is_empty()
+                {
+                    *first = Some(Instant::now());
+                }
                 if let Ok(mut buf) = buffer.lock() {
                     buf.extend(data.iter().map(|sample| sample.to_sample::<f32>()));
                 }
@@ -153,6 +194,16 @@ where
             None,
         )
         .map_err(|error| format!("could not open microphone: {error}"))
+}
+
+/// Looks up the default microphone and its settings without opening a stream,
+/// so the audio subsystem is initialised before the first key press. The
+/// microphone itself is not opened (ADR 0010).
+pub fn warm_up() {
+    let host = cpal::default_host();
+    if let Some(device) = host.default_input_device() {
+        let _ = device.default_input_config();
+    }
 }
 
 /// Averages interleaved channels into one channel.
