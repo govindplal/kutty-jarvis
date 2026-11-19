@@ -9,3 +9,7 @@ build/
 .next/
 .claude/settings.local.json
 CLAUDE.local.md
+
+# local tooling and model weights
+.tools/
+.models/
