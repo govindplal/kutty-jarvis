@@ -1,0 +1,63 @@
+{
+  "summary": {
+    "wer": 0,
+    "mean_latency_s": 1.36,
+    "real_time_factor": 0.35
+  },
+  "rows": [
+    {
+      "file": "s01.wav",
+      "reference": "How do I export this project as a video file?",
+      "hypothesis": "How do I export this project as a video file?",
+      "word_errors": 0,
+      "audio_s": 3.62,
+      "ms": 1505,
+      "rtf": 0.42
+    },
+    {
+      "file": "s02.wav",
+      "reference": "Where is the settings menu in this application?",
+      "hypothesis": "Where is the settings menu in this application?",
+      "word_errors": 0,
+      "audio_s": 3.26,
+      "ms": 1169,
+      "rtf": 0.36
+    },
+    {
+      "file": "s03.wav",
+      "reference": "Can you explain what this error message means and how to fix it?",
+      "hypothesis": "Can you explain what this error message means and how to fix it?",
+      "word_errors": 0,
+      "audio_s": 4.06,
+      "ms": 1407,
+      "rtf": 0.35
+    },
+    {
+      "file": "s04.wav",
+      "reference": "Show me how to change the font size for the selected text.",
+      "hypothesis": "Show me how to change the font size for the selected text.",
+      "word_errors": 0,
+      "audio_s": 4.08,
+      "ms": 1292,
+      "rtf": 0.32
+    },
+    {
+      "file": "s05.wav",
+      "reference": "What does the blue button in the top right corner do?",
+      "hypothesis": "What does the blue button in the top right corner do?",
+      "word_errors": 0,
+      "audio_s": 3.38,
+      "ms": 1222,
+      "rtf": 0.36
+    },
+    {
+      "file": "s06.wav",
+      "reference": "I want to merge these two spreadsheets into one, where should I start?",
+      "hypothesis": "I want to merge these two spreadsheets into one. Where should I start?",
+      "word_errors": 0,
+      "audio_s": 4.9,
+      "ms": 1556,
+      "rtf": 0.32
+    }
+  ]
+}
