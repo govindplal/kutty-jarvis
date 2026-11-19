@@ -3,22 +3,24 @@
 Updated: 2026-11-20
 
 ## Now
-- Repo public, `main` protected (PR required, linear history, CI checks `Commit and PR title lint` and `Branch name` required, admins bound).
-- Merged: #1 commitlint, #2 vision spike, #3 docs/ADRs, #4 CI, #5 speech spike.
-- Open: Tauri scaffold (`feat/tauri-app-scaffold`, `app/`), vision matrix finding 0003 (`feat/small-vision-model-spike`).
-- C++ Build Tools installed; Rust builds. `cargo check` and debug binary build pass; the app launches and stays up.
+- `main` protected; required checks: `Commit and PR title lint`, `Branch name`, `App checks`.
+- Merged: docs (#8), lint and tests (#9), tray and hotkey (#10).
+- Screen capture on the push-to-talk press: built on `feat/screen-capture-on-hotkey`. The 1280x720 capture works end to end; nothing is written to disk (ADR 0009).
 
 ## Next
-- Measure idle RAM of the Tauri app and compare to an Electron baseline (ADR 0003 asks for this). Not measured yet: the attempt was blocked and not repeated.
-- Rerun LFM3-VL-2B with reasoning disabled and a larger token budget (finding 0003 is invalid for it).
-- First feature: hotkey plus tray icon (`feat/tray-and-hotkey`), then screen capture.
-- Add lint and test tooling (eslint, clippy, vitest, cargo test) in its own chore branch.
+- Open PR for screen capture; merge after `App checks` passes.
+- Microphone recording while the key is held (ADR needed for the audio pipeline).
+- Connect the captured frame and transcript to the model (llama-server, LFM2.5-VL-450M as the candidate).
+- Rerun LFM3-VL-2B with reasoning off and a bigger token budget (finding 0003 is invalid for it).
+- Voice licence review for the Lessac Piper voices before shipping.
 
 ## Open questions / blocked on the user
-- None blocking. Speech voice licence review (Lessac dataset) still open (finding 0002).
+- None blocking.
 
 ## Learned this project
-- Machine is memory-constrained during model runs (16 GB, about 3 GB free while a 1.6B model and browsers run). Claude Code may stop background waits under memory pressure. Close other apps before benchmarks.
-- Avoid killing processes you did not start: a broad `taskkill` of WebView2 was blocked. Kill only your own PIDs.
-- commitlint rejects body lines over 72 chars: use `.tools/gc.sh` (wraps bodies automatically).
-- Branches cut before switching: `git switch -c` fails if the name exists and the commit lands on the current branch. Check `git branch --show-current` before committing.
+- Check exit codes and scan full test output; a summary line like "5 passed" hid unhandled errors once.
+- When resolving merge conflicts, `--theirs` means the branch being merged in (main), not your branch. Confirm the side before choosing.
+- Squash merges leave branches that conflict with main; merge main in and check each conflict.
+- Machine is memory-constrained during model runs. Close other apps before benchmarks.
+- Kill only processes you started (a broad WebView2 kill was blocked).
+- Commit bodies must wrap at 72 columns; use `.tools/gc.sh`.
