@@ -1,0 +1,146 @@
+[
+  {
+    "engine": "lfm3-audio-2b-q4_k_m",
+    "text": "short",
+    "repeat": 0,
+    "wall_s": 5.98,
+    "audio_s": 3.04,
+    "rtf": 1.97
+  },
+  {
+    "engine": "piper-en_US-lessac-medium",
+    "text": "short",
+    "repeat": 0,
+    "wall_s": 0.65,
+    "audio_s": 2.64,
+    "rtf": 0.24
+  },
+  {
+    "engine": "piper-en_US-lessac-low",
+    "text": "short",
+    "repeat": 0,
+    "wall_s": 0.66,
+    "audio_s": 2.6,
+    "rtf": 0.26
+  },
+  {
+    "engine": "lfm3-audio-2b-q4_k_m",
+    "text": "short",
+    "repeat": 1,
+    "wall_s": 5.77,
+    "audio_s": 2.72,
+    "rtf": 2.12
+  },
+  {
+    "engine": "piper-en_US-lessac-medium",
+    "text": "short",
+    "repeat": 1,
+    "wall_s": 0.62,
+    "audio_s": 2.45,
+    "rtf": 0.25
+  },
+  {
+    "engine": "piper-en_US-lessac-low",
+    "text": "short",
+    "repeat": 1,
+    "wall_s": 0.57,
+    "audio_s": 2.68,
+    "rtf": 0.21
+  },
+  {
+    "engine": "lfm3-audio-2b-q4_k_m",
+    "text": "short",
+    "repeat": 2,
+    "wall_s": 5.68,
+    "audio_s": 2.72,
+    "rtf": 2.09
+  },
+  {
+    "engine": "piper-en_US-lessac-medium",
+    "text": "short",
+    "repeat": 2,
+    "wall_s": 0.62,
+    "audio_s": 2.52,
+    "rtf": 0.25
+  },
+  {
+    "engine": "piper-en_US-lessac-low",
+    "text": "short",
+    "repeat": 2,
+    "wall_s": 0.56,
+    "audio_s": 2.52,
+    "rtf": 0.22
+  },
+  {
+    "engine": "lfm3-audio-2b-q4_k_m",
+    "text": "long",
+    "repeat": 0,
+    "wall_s": 13.39,
+    "audio_s": 9.92,
+    "rtf": 1.35
+  },
+  {
+    "engine": "piper-en_US-lessac-medium",
+    "text": "long",
+    "repeat": 0,
+    "wall_s": 1.14,
+    "audio_s": 8.65,
+    "rtf": 0.13
+  },
+  {
+    "engine": "piper-en_US-lessac-low",
+    "text": "long",
+    "repeat": 0,
+    "wall_s": 1.0,
+    "audio_s": 8.54,
+    "rtf": 0.12
+  },
+  {
+    "engine": "lfm3-audio-2b-q4_k_m",
+    "text": "long",
+    "repeat": 1,
+    "wall_s": 12.96,
+    "audio_s": 9.28,
+    "rtf": 1.4
+  },
+  {
+    "engine": "piper-en_US-lessac-medium",
+    "text": "long",
+    "repeat": 1,
+    "wall_s": 1.16,
+    "audio_s": 9.0,
+    "rtf": 0.13
+  },
+  {
+    "engine": "piper-en_US-lessac-low",
+    "text": "long",
+    "repeat": 1,
+    "wall_s": 1.08,
+    "audio_s": 8.94,
+    "rtf": 0.12
+  },
+  {
+    "engine": "lfm3-audio-2b-q4_k_m",
+    "text": "long",
+    "repeat": 2,
+    "wall_s": 13.45,
+    "audio_s": 9.92,
+    "rtf": 1.36
+  },
+  {
+    "engine": "piper-en_US-lessac-medium",
+    "text": "long",
+    "repeat": 2,
+    "wall_s": 1.08,
+    "audio_s": 8.53,
+    "rtf": 0.13
+  },
+  {
+    "engine": "piper-en_US-lessac-low",
+    "text": "long",
+    "repeat": 2,
+    "wall_s": 0.97,
+    "audio_s": 9.1,
+    "rtf": 0.11
+  }
+]
