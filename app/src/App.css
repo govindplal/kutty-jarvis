@@ -114,3 +114,11 @@ button {
     background-color: #0f0f0f69;
   }
 }
+
+.ptt-status {
+  font-weight: 600;
+}
+
+.ptt-listening {
+  color: #2563eb;
+}
