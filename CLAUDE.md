@@ -10,7 +10,7 @@ Free, open-source (MIT) AI buddy that lives on your PC: press a hotkey, ask out 
 - Windows first, but keep platform code behind a thin layer so macOS/Linux can follow.
 
 ## Built vs still to build
-Nothing built yet. Buddy-first scope (v1): hotkey push-to-talk, screen capture, model call, voice reply, pointing overlay. Agents/routines are out of scope until the buddy is solid.
+Only the empty Tauri desktop shell exists in `app/`; none of the buddy features are built. Buddy-first scope (v1): hotkey push-to-talk, screen capture, model call, voice reply, pointing overlay. Agents/routines are out of scope until the buddy is solid.
 
 ## Stack (decided)
 - Name: kutty-jarvis. License: MIT. Built from scratch (not a fork). See ADRs 0002 and 0003.
