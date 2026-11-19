@@ -1,0 +1,66 @@
+{
+  "variant": "pixel",
+  "image": "C:/Users/govin/repos/portfolios/jarvis/.tools/spike-data/synthetic-640.png",
+  "hits": 0,
+  "targets": 8,
+  "mean_error_px": 0,
+  "mean_latency_s": 22.9,
+  "results": [
+    {
+      "label": "Save",
+      "hit": false,
+      "error_px": null,
+      "ms": 22640,
+      "reply": ""
+    },
+    {
+      "label": "Open",
+      "hit": false,
+      "error_px": null,
+      "ms": 22525,
+      "reply": ""
+    },
+    {
+      "label": "Export",
+      "hit": false,
+      "error_px": null,
+      "ms": 23214,
+      "reply": ""
+    },
+    {
+      "label": "Settings",
+      "hit": false,
+      "error_px": null,
+      "ms": 22803,
+      "reply": ""
+    },
+    {
+      "label": "Share",
+      "hit": false,
+      "error_px": null,
+      "ms": 23076,
+      "reply": ""
+    },
+    {
+      "label": "Delete",
+      "hit": false,
+      "error_px": null,
+      "ms": 22955,
+      "reply": ""
+    },
+    {
+      "label": "Undo",
+      "hit": false,
+      "error_px": null,
+      "ms": 23329,
+      "reply": ""
+    },
+    {
+      "label": "Help",
+      "hit": false,
+      "error_px": null,
+      "ms": 22556,
+      "reply": ""
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "variant": "pixel",
+  "image": "C:/Users/govin/repos/portfolios/jarvis/.tools/spike-data/synthetic-ui.png",
+  "hits": 0,
+  "targets": 8,
+  "mean_error_px": 287,
+  "mean_latency_s": 88.4,
+  "results": [
+    {
+      "label": "Save",
+      "hit": false,
+      "error_px": 173,
+      "ms": 87976,
+      "reply": "[POINT:320,50]"
+    },
+    {
+      "label": "Open",
+      "hit": false,
+      "error_px": 84,
+      "ms": 89016,
+      "reply": "[POINT:495,150]"
+    },
+    {
+      "label": "Export",
+      "hit": false,
+      "error_px": 273,
+      "ms": 88519,
+      "reply": "[POINT:560,320]"
+    },
+    {
+      "label": "Settings",
+      "hit": false,
+      "error_px": 551,
+      "ms": 88118,
+      "reply": "[POINT:560,320]"
+    },
+    {
+      "label": "Share",
+      "hit": false,
+      "error_px": 268,
+      "ms": 88457,
+      "reply": "[POINT:495,495]"
+    },
+    {
+      "label": "Delete",
+      "hit": false,
+      "error_px": 147,
+      "ms": 88536,
+      "reply": "[POINT:560,320]"
+    },
+    {
+      "label": "Undo",
+      "hit": false,
+      "error_px": 276,
+      "ms": 88783,
+      "reply": "[POINT:560,320]"
+    },
+    {
+      "label": "Help",
+      "hit": false,
+      "error_px": 526,
+      "ms": 88137,
+      "reply": "[POINT:640,720]"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+== lfm25-vl-450m-q4km synthetic-640 bbox
+[bbox] hit rate 3/8, mean error 84px, mean latency 2.0s
+== lfm25-vl-450m-q4km synthetic-640 pixel
+[pixel] hit rate 0/8, mean error 705px, mean latency 1.9s
+== lfm25-vl-450m-q4km synthetic-ui bbox
+[bbox] hit rate 4/8, mean error 84px, mean latency 17.7s
+== lfm25-vl-450m-q4km synthetic-ui pixel
+[pixel] hit rate 0/8, mean error 754px, mean latency 23.6s
+== lfm25-vl-1.6b-q4km synthetic-640 bbox
+[bbox] hit rate 3/8, mean error 109px, mean latency 27.8s
+== lfm25-vl-1.6b-q4km synthetic-640 pixel
+[pixel] hit rate 1/8, mean error 305px, mean latency 26.7s
+== lfm25-vl-1.6b-q4km synthetic-ui bbox
+[bbox] hit rate 4/8, mean error 66px, mean latency 89.7s
+== lfm25-vl-1.6b-q4km synthetic-ui pixel
+[pixel] hit rate 0/8, mean error 287px, mean latency 88.4s
+== lfm3-vl-2b-q4km synthetic-640 bbox
+[bbox] hit rate 0/8, mean error 0px, mean latency 23.3s
+== lfm3-vl-2b-q4km synthetic-640 pixel
+[pixel] hit rate 0/8, mean error 0px, mean latency 22.9s
+== lfm3-vl-2b-q4km synthetic-ui bbox
+== lfm3-vl-2b-q4km synthetic-ui pixel
