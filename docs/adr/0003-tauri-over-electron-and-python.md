@@ -3,7 +3,8 @@
 - Status: accepted
 - Date: 2026-11-20
 - Deciders: project owner (delegated the choice: "best for majority users, CPU-only modest laptop")
-- Evidence: reasoning from framework characteristics; to be validated by measuring idle memory in the scaffold (see Consequences)
+- Evidence: reasoning from framework characteristics
+- Amended: 2026-11-20 (dropped the Electron comparison, see Consequences)
 
 ## Context
 
@@ -23,4 +24,4 @@ Tauri v2 with a Rust core and a React/TypeScript front end. Platform-specific co
 
 - Good: small download, low overhead, a native-feeling tray app, a safe language for system code.
 - Cost: Rust learning curve for contributors; the overlay and UI Automation need Win32 work; WebView2 is required (preinstalled on Windows 11 and current Windows 10).
-- Validate: record idle RAM of the scaffolded app in a finding. If it is not clearly lower than an Electron baseline, revisit.
+- Baseline, not re-validation: the owner confirmed Tauri as final, so we do not build an Electron comparison. We still record the app's own idle RAM as a regression baseline, so later features that bloat memory get noticed.
