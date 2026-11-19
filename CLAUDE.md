@@ -26,9 +26,13 @@ Only the empty Tauri desktop shell exists in `app/`; none of the buddy features 
 - Rust check: `cd app/src-tauri && cargo check`
 - Run the desktop app: `cd app && npm run tauri dev`
 - Debug binary (no installer): `cd app && npx tauri build --debug --no-bundle`
-- Test and lint: not set up yet (planned: vitest, eslint, clippy, cargo test).
+- Frontend checks (from `app/`): `npm run typecheck`, `npm run lint` (eslint), `npm test` (vitest + Testing Library, jsdom).
+- Rust checks (from `app/src-tauri/`): `cargo fmt --check`, `cargo clippy --all-targets -- -D warnings`, `cargo test`.
+- CI runs all of the above on Windows (`App checks` job).
 
 ## Gotchas
+- npm 10.9 crashes with `edgesOut` when installing `@testing-library/jest-dom` here; it is not used. Install packages one at a time if the bug appears.
+- `cargo check`/`clippy` need `app/dist` to exist: run `npm run build` first.
 - LFM2.5-Audio llama.cpp support was a draft PR (#18641) at last check; the ONNX path may be more mature. Verify before committing.
 - Unverified: whether LFM2.5-VL gives usable click-point grounding. Spike this first.
 
