@@ -4,6 +4,7 @@ import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
 import { PushToTalkStatus } from "./components/PushToTalkStatus";
 import { ScreenCaptureStatus } from "./components/ScreenCaptureStatus";
+import { RecordingStatus } from "./components/RecordingStatus";
 
 function App() {
   const [greetMsg, setGreetMsg] = useState("");
@@ -19,6 +20,7 @@ function App() {
       <h1>Welcome to Tauri + React</h1>
       <PushToTalkStatus />
       <ScreenCaptureStatus />
+      <RecordingStatus />
 
       <div className="row">
         <a href="https://vite.dev" target="_blank">
