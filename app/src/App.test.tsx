@@ -7,16 +7,22 @@ const invoke = vi.hoisted(() => vi.fn());
 vi.mock("@tauri-apps/api/core", () => ({ invoke }));
 vi.mock("@tauri-apps/api/event", () => ({ listen: vi.fn(async () => () => {}) }));
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  invoke.mockReset();
+});
 
 describe("App", () => {
   it("labels the name input for screen readers", () => {
+    invoke.mockResolvedValue(null);
     render(<App />);
     expect(screen.getByRole("textbox", { name: "Name to greet" })).toBeTruthy();
   });
 
   it("sends the typed name to the greet command and shows the reply", async () => {
-    invoke.mockResolvedValue("Hello, Ada!");
+    invoke.mockImplementation(async (command: string) =>
+      command === "greet" ? "Hello, Ada!" : null,
+    );
     render(<App />);
 
     await userEvent.type(screen.getByRole("textbox", { name: "Name to greet" }), "Ada");

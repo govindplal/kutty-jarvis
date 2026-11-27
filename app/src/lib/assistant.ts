@@ -10,6 +10,8 @@ export type AssistantRepliedPayload = {
   pointedElement?: { id: number; role: string; name: string };
   transcribeMs: number;
   answerMs: number;
+  /** Which provider handled each step, e.g. "local" or "anthropic". */
+  used?: { speechToText: string; assistant: string };
 };
 
 export type AssistantFailedPayload = {
