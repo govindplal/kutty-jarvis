@@ -6,15 +6,15 @@ Updated: 2026-11-27
 - `main` protected; required checks: `Commit and PR title lint`, `Branch name`, `App checks`; branch must be up to date.
 - Merge method: rebase-merge only (ADR 0011). No Claude trailers on commits or PRs (`attribution` in `.claude/settings.json`).
 - Merged: tray and hotkey (#10), screen capture (#11), microphone recording (#12), recording start-gap fix (#13), UI element list and pointing overlay.
-- Model loop built on `feat/model-loop` (ADR 0012): on key release the app transcribes the recording (LFM3-Audio), asks LFM2.5-VL with screenshot + numbered element list, parses `[POINT:n]`, points the overlay, and emits `assistant-thinking` / `assistant-replied` / `assistant-failed`.
+- Merged (#23): model loop (ADR 0012): on key release the app transcribes the recording (LFM3-Audio), asks LFM2.5-VL with screenshot + numbered element list, parses `[POINT:n]`, points the overlay, and emits `assistant-thinking` / `assistant-replied` / `assistant-failed`.
 - Local models run as lazily started `llama-server` sidecars; the files are placed by hand (docs/setup/local-models.md).
-- Speech output on `feat/speech-output-piper`: `tts::speak`/`tts::stop` with Piper (downloaded on first use) and SAPI fallback (ADR 0014), not yet called by the model loop. Vision benchmark reruns are a separate branch.
+- Speech output (PR #22, landing; ADR 0014): model-loop replies are spoken with Piper (downloaded on first use) or SAPI; a hotkey press interrupts; exit stops Piper.
 
 ## Next
 - Spoken test at the laptop: real microphone, real windows, real latency (the loop was only run on a Linux sandbox with synthetic speech).
-- Speak the reply: subscribe to `assistant-replied` (Piper, ADR 0007).
+- Hear spoken replies on the real laptop (Windows playback is only compile-checked).
 - Model download step (pinned llama.cpp and GGUF files with size checks) so setup is not manual.
-- Cloud providers with user keys: another `SpeechToText` / `Assistant` implementation; enable TLS on `ureq`.
+- Cloud providers with user keys: another `SpeechToText` / `Assistant` implementation.
 - Windows job object so a sidecar cannot outlive a killed app.
 - Finding: can the local model pick the right UIA element id from a list? (Sandbox: right for "save"/"settings", wrong for an open question.)
 

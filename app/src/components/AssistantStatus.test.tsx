@@ -86,4 +86,14 @@ describe("AssistantStatus", () => {
     send(ASSISTANT_THINKING_EVENT, { stage: "transcribing" });
     expect(screen.getByRole("status").textContent).toBe("Listening to what you said...");
   });
+
+  it("shows Speaking... until that utterance finishes, ignoring older ones", async () => {
+    await setup();
+    send("speech-started", { id: 2, engine: "piper" });
+    expect(screen.getByRole("status").textContent).toBe("Speaking...");
+    send("speech-finished", { id: 1, engine: "piper", interrupted: true });
+    expect(screen.getByRole("status").textContent).toBe("Speaking...");
+    send("speech-finished", { id: 2, engine: "piper" });
+    expect(screen.getByRole("status").textContent).toBe("");
+  });
 });
