@@ -148,6 +148,8 @@ pub fn register(app: &App) -> tauri::Result<()> {
                         emit(app, PUSH_TO_TALK_EVENT, next);
                         match next {
                             PushToTalkState::Listening => {
+                                // Barge-in: a new question cuts off the buddy mid-sentence.
+                                crate::tts::stop(app);
                                 let screenshots = assistant::runtime::begin_turn(app);
                                 capture_in_background(app.clone(), screenshots);
                                 start_recording(app);

@@ -15,6 +15,7 @@ export const ASSISTANT_FAILED_EVENT = "assistant-failed";
 /** Shows what the buddy heard, is working on, and answered. */
 export function AssistantStatus() {
   const [state, setState] = useState<AssistantState>({ kind: "idle" });
+  const [speakingId, setSpeakingId] = useState<number | null>(null);
 
   useEffect(() => {
     const thinking = listen<AssistantThinkingPayload>(ASSISTANT_THINKING_EVENT, (event) => {
@@ -26,7 +27,15 @@ export function AssistantStatus() {
     const failed = listen<AssistantFailedPayload>(ASSISTANT_FAILED_EVENT, (event) => {
       setState({ kind: "failed", payload: event.payload });
     });
+    const started = listen<{ id: number }>("speech-started", (event) => setSpeakingId(event.payload.id));
+    const ended = ["speech-finished", "speech-failed"].map((name) =>
+      listen<{ id: number }>(name, (event) =>
+        setSpeakingId((current) => (current === event.payload.id ? null : current)),
+      ),
+    );
     return () => {
+      started.then((stop) => stop());
+      ended.forEach((end) => end.then((stop) => stop()));
       thinking.then((stop) => stop());
       replied.then((stop) => stop());
       failed.then((stop) => stop());
@@ -35,6 +44,7 @@ export function AssistantStatus() {
 
   return (
     <div className="capture-status" role="status" aria-live="polite">
+      {speakingId !== null && <p>Speaking...</p>}
       {describeAssistant(state).map((line) => (
         <p key={line}>{line}</p>
       ))}

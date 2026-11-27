@@ -16,6 +16,7 @@ use tauri::{AppHandle, Emitter, Manager};
 use super::{Failure, Input, Reply, Stage};
 use crate::models::{Assistant, SpeechToText};
 use crate::overlay::{self, DEFAULT_HOLD_MS};
+use crate::tts;
 use crate::uia::{self, ElementList};
 
 pub const THINKING_EVENT: &str = "assistant-thinking";
@@ -222,6 +223,10 @@ pub fn answer(app: &AppHandle, turn: Turn, wav: Vec<u8>, has_audio: bool) {
 }
 
 fn deliver(app: &AppHandle, reply: Reply) {
+    // Errors are never spoken; only a real reply (tags already stripped).
+    if !reply.text.trim().is_empty() {
+        tts::speak(app, reply.text.clone());
+    }
     // Report a pointed element only when the overlay really showed it.
     let pointed_element = reply.target.and_then(|target| {
         match overlay::point_at(app, target.rect, DEFAULT_HOLD_MS) {
