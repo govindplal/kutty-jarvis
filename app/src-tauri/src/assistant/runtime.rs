@@ -5,6 +5,7 @@
 //! Overlap policy: one question at a time. A question that finishes recording
 //! while another is still being answered is dropped and reported as `busy`.
 
+use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{self, Receiver, Sender};
 use std::sync::{Arc, Mutex};
@@ -14,8 +15,11 @@ use serde::Serialize;
 use tauri::{AppHandle, Emitter, Manager};
 
 use super::{Failure, Input, Reply, Stage};
+use crate::models::select;
 use crate::models::{Assistant, SpeechToText};
 use crate::overlay::{self, DEFAULT_HOLD_MS};
+use crate::secrets::KeyStore;
+use crate::settings;
 use crate::tts;
 use crate::uia::{self, ElementList};
 
@@ -28,10 +32,13 @@ pub const FAILED_EVENT: &str = "assistant-failed";
 const ELEMENTS_WAIT: Duration = Duration::from_secs(4);
 const SCREENSHOT_WAIT: Duration = Duration::from_secs(5);
 
-/// The providers in use, chosen once at startup.
+/// The local providers plus what is needed to pick cloud ones per question
+/// (ADR 0015).
 pub struct Providers {
-    pub speech_to_text: Arc<dyn SpeechToText>,
-    pub assistant: Arc<dyn Assistant>,
+    pub local_speech_to_text: Arc<dyn SpeechToText>,
+    pub local_assistant: Arc<dyn Assistant>,
+    pub store: Arc<dyn KeyStore>,
+    pub config_dir: PathBuf,
 }
 
 /// Set while a question is being answered.
@@ -128,6 +135,7 @@ struct Replied {
     pointed_element: Option<PointedElement>,
     transcribe_ms: u64,
     answer_ms: u64,
+    used: select::Used,
 }
 
 #[derive(Serialize, Clone)]
@@ -175,6 +183,19 @@ pub fn answer(app: &AppHandle, turn: Turn, wav: Vec<u8>, has_audio: bool) {
     }
     let _guard = BusyGuard(&busy.0);
 
+    let chosen = select::choose(
+        &settings::load(&providers.config_dir),
+        providers.store.as_ref(),
+        &providers.local_speech_to_text,
+        &providers.local_assistant,
+    );
+    let used = chosen.used;
+    let (stt, assistant) = match (chosen.speech_to_text, chosen.assistant) {
+        (Err(message), _) => return fail(app, Stage::Transcribe, message),
+        (_, Err(message)) => return fail(app, Stage::Answer, message),
+        (Ok(stt), Ok(assistant)) => (stt, assistant),
+    };
+
     emit(
         app,
         THINKING_EVENT,
@@ -201,28 +222,23 @@ pub fn answer(app: &AppHandle, turn: Turn, wav: Vec<u8>, has_audio: bool) {
         screenshot_png,
         elements: elements.ok(),
     };
-    let result = super::run(
-        providers.speech_to_text.as_ref(),
-        providers.assistant.as_ref(),
-        input,
-        |transcript| {
-            emit(
-                app,
-                THINKING_EVENT,
-                Thinking {
-                    stage: "thinking",
-                    transcript: Some(transcript.to_string()),
-                },
-            );
-        },
-    );
+    let result = super::run(stt.as_ref(), assistant.as_ref(), input, |transcript| {
+        emit(
+            app,
+            THINKING_EVENT,
+            Thinking {
+                stage: "thinking",
+                transcript: Some(transcript.to_string()),
+            },
+        );
+    });
     match result {
-        Ok(reply) => deliver(app, reply),
+        Ok(reply) => deliver(app, reply, used),
         Err(Failure { stage, message }) => fail(app, stage, message),
     }
 }
 
-fn deliver(app: &AppHandle, reply: Reply) {
+fn deliver(app: &AppHandle, reply: Reply, used: select::Used) {
     // Errors are never spoken; only a real reply (tags already stripped).
     if !reply.text.trim().is_empty() {
         tts::speak(app, reply.text.clone());
@@ -253,6 +269,7 @@ fn deliver(app: &AppHandle, reply: Reply) {
             pointed_element,
             transcribe_ms: reply.transcribe_time.as_millis() as u64,
             answer_ms: reply.answer_time.as_millis() as u64,
+            used,
         },
     );
 }

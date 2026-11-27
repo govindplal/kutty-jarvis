@@ -13,14 +13,10 @@ use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
 use super::openai_compat::{Endpoint, OpenAiCompatAsr, OpenAiCompatAssistant};
-use super::{Assistant, Question, SpeechToText};
-use crate::capture;
+use super::{Assistant, Question, SpeechToText, shrink_for_model};
 
 pub const LLAMA_SERVER_ENV: &str = "KJ_LLAMA_SERVER";
 pub const MODELS_DIR_ENV: &str = "KJ_MODELS_DIR";
-/// Longest edge of the screenshot sent to the local vision model.
-pub const IMAGE_EDGE_ENV: &str = "KJ_VLM_IMAGE_EDGE";
-const DEFAULT_IMAGE_EDGE: u32 = 960;
 const SETUP_DOC: &str = "docs/setup/local-models.md";
 
 const READY_TIMEOUT: Duration = Duration::from_secs(180);
@@ -416,20 +412,7 @@ struct LocalVision(Arc<Sidecar>);
 impl Assistant for LocalVision {
     fn answer(&self, question: &Question) -> Result<String, String> {
         let endpoint = Endpoint::local(self.0.url()?, VLM_TIMEOUT);
-        // Pointing uses the element list, so the picture only gives context
-        // and a small one keeps a CPU-only answer fast (finding 0003).
-        let edge = std::env::var(IMAGE_EDGE_ENV)
-            .ok()
-            .and_then(|value| value.trim().parse::<u32>().ok())
-            .filter(|edge| *edge > 0)
-            .unwrap_or(DEFAULT_IMAGE_EDGE);
-        let mut question = question.clone();
-        if let Some(png) = &question.screenshot_png
-            && let Ok(small) = capture::shrink_png(png, edge)
-        {
-            question.screenshot_png = Some(small);
-        }
-        OpenAiCompatAssistant(endpoint).answer(&question)
+        OpenAiCompatAssistant(endpoint).answer(&shrink_for_model(question))
     }
 }
 
