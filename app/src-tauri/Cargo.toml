@@ -27,6 +27,16 @@ xcap = "0.9"
 cpal = "0.15"
 hound = "3.5"
 
+[target.'cfg(windows)'.dependencies]
+# UI Automation (element list) and overlay window styles. Same version Tauri
+# already pulls in, so it adds no new crate to the build.
+windows = { version = "0.62", features = [
+  "Win32_Foundation",
+  "Win32_System_Com",
+  "Win32_UI_Accessibility",
+  "Win32_UI_WindowsAndMessaging",
+] }
+
 
 # Read the optimization guideline for more details: https://tauri.app/concept/size/#cargo-configuration
 [profile.release]
