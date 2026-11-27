@@ -57,6 +57,23 @@ pub async fn debug_list_elements(
     Ok(Listing { list, prompt })
 }
 
+/// Lets the frontend detect a debug build with speech testing.
+#[tauri::command]
+pub fn debug_speech_available() -> bool {
+    true
+}
+
+/// Speaks `text` through the normal engine choice (Piper, else SAPI).
+#[tauri::command]
+pub fn debug_speak(app: AppHandle, text: String) {
+    crate::tts::speak(&app, text);
+}
+
+#[tauri::command]
+pub fn debug_stop_speaking(app: AppHandle) {
+    crate::tts::stop(&app);
+}
+
 /// Points the overlay at element `id` of the last listing.
 #[tauri::command]
 pub async fn debug_point_at(

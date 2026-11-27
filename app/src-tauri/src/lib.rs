@@ -11,6 +11,9 @@ pub mod models;
 pub mod overlay;
 mod push_to_talk;
 mod tray;
+/// Spoken replies; public so the model loop can call `tts::speak` and
+/// `tts::stop`.
+pub mod tts;
 /// On-screen UI elements; public so the model loop can call
 /// `uia::list_elements` and `uia::render_for_prompt`.
 pub mod uia;
@@ -47,6 +50,7 @@ pub fn run() {
             tray::create(app)?;
             hotkey::register(app)?;
             overlay::init(app)?;
+            tts::init(app)?;
             #[cfg(debug_assertions)]
             app.manage(debug_commands::LastElements::default());
             Ok(())
@@ -66,6 +70,9 @@ pub fn run() {
         debug_commands::debug_pointing_available,
         debug_commands::debug_list_elements,
         debug_commands::debug_point_at,
+        debug_commands::debug_speech_available,
+        debug_commands::debug_speak,
+        debug_commands::debug_stop_speaking,
     ]);
     #[cfg(not(debug_assertions))]
     let builder =
