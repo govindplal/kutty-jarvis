@@ -2,7 +2,7 @@
 
 - Status: accepted
 - Date: 2026-11-20
-- Amended: 2026-11-20 (start-up gap measured and fixed)
+- Amended: 2026-11-20 (start-up gap measured and fixed); 2026-11-27 (debug export, see Consequences)
 - Deciders: Claude Code, owner informed
 - Evidence: 18 Rust tests (downmix, resampling, WAV round trip); end-to-end run in the built app: holding the key produced a recording shown in the window (1.3 s, 39 KB, 16 kHz mono 16-bit).
 
@@ -30,3 +30,4 @@ The buddy listens for a question. Microphone access is the most sensitive capabi
 - Start-up gap, resolved: the first recording after launch lost 1.2 to 1.3 s to a cold start of the audio device. A lookup of the default device and its settings at launch, which does not open the microphone, cuts it to 0.2 s ([finding 0004](../findings/0004-recording-start-latency.md)). Speech quality is still untested: runs so far used room noise, not a spoken question.
 - Not yet covered: a microphone-in-use indicator in the tray, a first-run privacy notice, device selection in settings, and choosing a device other than the default.
 - Revisit if we add a wake word or continuous listening; that would need a new ADR and a visible indicator.
+- Amendment 2026-11-27: debug builds (`debug_assertions`) write the last recording to `%TEMP%/kutty-jarvis/last-recording.wav`, overwriting the previous file, so speech recognition can be tested on real microphone audio ([finding 0005](../findings/0005-real-microphone-speech-recognition.md)). Release builds do not: the export function compiles to a stub with no file access, and the `recording-finished` payload then carries no path. Recordings stay in memory only in anything we ship.

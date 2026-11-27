@@ -35,6 +35,26 @@ describe("RecordingStatus", () => {
     );
   });
 
+  it("shows the debug export path only when present", async () => {
+    render(<RecordingStatus />);
+    await act(async () => {});
+    act(() =>
+      handlers.get(RECORDING_FINISHED_EVENT)?.({
+        payload: {
+          durationMs: 1300,
+          wavBytes: 40960,
+          heldMs: 2000,
+          readyMs: 150,
+          firstSampleMs: 700,
+          debugWavPath: "C:\\Temp\\kutty-jarvis\\last-recording.wav",
+        },
+      }),
+    );
+    expect(screen.getByRole("status").textContent).toContain(
+      "Debug copy: C:\\Temp\\kutty-jarvis\\last-recording.wav",
+    );
+  });
+
   it("says when no audio arrived at all", async () => {
     render(<RecordingStatus />);
     await act(async () => {});
