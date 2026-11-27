@@ -7,8 +7,8 @@ Updated: 2026-11-27
 - Merge method: rebase-merge only (ADR 0011). No Claude trailers on commits or PRs (`attribution` in `.claude/settings.json`).
 - Merged: tray and hotkey (#10), screen capture (#11), microphone recording (#12), recording start-gap fix (#13), UI element list and pointing overlay.
 - Model loop built on `feat/model-loop` (ADR 0012): on key release the app transcribes the recording (LFM3-Audio), asks LFM2.5-VL with screenshot + numbered element list, parses `[POINT:n]`, points the overlay, and emits `assistant-thinking` / `assistant-replied` / `assistant-failed`.
-- Local models run as lazily started `llama-server` sidecars; the files are placed by hand (docs/setup/local-models.md). No speech output yet.
-- Swarm (2026-11-27): speech output (Piper) and vision benchmark reruns are separate branches.
+- Local models run as lazily started `llama-server` sidecars; the files are placed by hand (docs/setup/local-models.md).
+- Speech output on `feat/speech-output-piper`: `tts::speak`/`tts::stop` with Piper (downloaded on first use) and SAPI fallback (ADR 0014), not yet called by the model loop. Vision benchmark reruns are a separate branch.
 
 ## Next
 - Spoken test at the laptop: real microphone, real windows, real latency (the loop was only run on a Linux sandbox with synthetic speech).
