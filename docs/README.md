@@ -35,6 +35,7 @@ Everything we learn and decide is written down here. The goal is that a new cont
 - [0011 Rebase-merge instead of squash](adr/0011-rebase-merge-instead-of-squash.md)
 - [0012 Run the model loop on llama-server sidecars behind provider interfaces](adr/0012-model-loop-llama-server-sidecar.md)
 - [0013 Draw the pointing cursor in a second, click-through Tauri window](adr/0013-pointing-overlay-second-tauri-window.md)
+- [0014 Speak replies with Piper, downloaded on first use, and Windows SAPI as fallback](adr/0014-speech-output-piper-with-sapi-fallback.md)
 
 ### Findings
 - [0001 Vision grounding with LFM2.5-VL on CPU](findings/0001-vision-grounding-lfm25-vl-cpu.md)
