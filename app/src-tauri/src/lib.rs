@@ -52,7 +52,8 @@ pub fn run() {
         debug_commands::debug_point_at,
     ]);
     #[cfg(not(debug_assertions))]
-    let builder = builder.invoke_handler(tauri::generate_handler![greet, hotkey::push_to_talk_status]);
+    let builder =
+        builder.invoke_handler(tauri::generate_handler![greet, hotkey::push_to_talk_status]);
 
     builder
         .run(tauri::generate_context!())
