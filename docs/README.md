@@ -7,6 +7,7 @@ Everything we learn and decide is written down here. The goal is that a new cont
 | [`adr/`](adr/) | Architecture decision records: one decision each, with context, options and consequences. Immutable once accepted; supersede instead of editing. | [Template](adr/0000-template.md) |
 | [`findings/`](findings/) | Experiment and spike write-ups: question, method, raw results, conclusion. Written so the experiment can be re-run and turned into an eval. | [Template](findings/0000-template.md) |
 | [`research/`](research/) | Background research on the product landscape, models and prior art, with dated sources. | Free-form, cite sources |
+| [`setup/`](setup/) | How to install what the app needs at run time (models, tools). | Short step-by-step guides |
 | [`devlog/`](devlog/) | One chronological entry per working day: what happened, what surprised us, what broke. Raw material for blog posts. | `YYYY-MM-DD.md` |
 
 ## Rules
@@ -32,6 +33,7 @@ Everything we learn and decide is written down here. The goal is that a new cont
 - [0009 Capture the screen only on hotkey press, in memory only](adr/0009-capture-screen-on-hotkey-only.md)
 - [0010 Record the microphone only while the key is held](adr/0010-record-microphone-only-while-key-held.md)
 - [0011 Rebase-merge instead of squash](adr/0011-rebase-merge-instead-of-squash.md)
+- [0012 Run the model loop on llama-server sidecars behind provider interfaces](adr/0012-model-loop-llama-server-sidecar.md)
 - [0013 Draw the pointing cursor in a second, click-through Tauri window](adr/0013-pointing-overlay-second-tauri-window.md)
 
 ### Findings
