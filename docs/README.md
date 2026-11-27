@@ -32,6 +32,7 @@ Everything we learn and decide is written down here. The goal is that a new cont
 - [0009 Capture the screen only on hotkey press, in memory only](adr/0009-capture-screen-on-hotkey-only.md)
 - [0010 Record the microphone only while the key is held](adr/0010-record-microphone-only-while-key-held.md)
 - [0011 Rebase-merge instead of squash](adr/0011-rebase-merge-instead-of-squash.md)
+- [0013 Draw the pointing cursor in a second, click-through Tauri window](adr/0013-pointing-overlay-second-tauri-window.md)
 
 ### Findings
 - [0001 Vision grounding with LFM2.5-VL on CPU](findings/0001-vision-grounding-lfm25-vl-cpu.md)
@@ -39,6 +40,7 @@ Everything we learn and decide is written down here. The goal is that a new cont
 - [0003 Smaller and newer vision models on CPU](findings/0003-small-vision-models-on-cpu.md) (partly invalid, see the finding)
 - [0004 Recording start-up gap and fix](findings/0004-recording-start-latency.md)
 - [0005 Real-microphone speech recognition](findings/0005-real-microphone-speech-recognition.md) (pending owner recording)
+- [0007 UI Automation enumeration across apps](findings/0007-uia-enumeration-across-apps.md)
 
 ### Research
 - [0001 HeyClicky and the open-source landscape](research/0001-heyclicky-and-open-source-landscape.md)
