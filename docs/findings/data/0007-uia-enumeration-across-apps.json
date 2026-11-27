@@ -1,0 +1,4945 @@
+{
+  "finding": "0007",
+  "date": "2026-11-27",
+  "machine": {
+    "cpu": "Intel64 Family 6 Model 165 (12 threads)",
+    "os": "Windows 11 Home 10.0.22631.6199",
+    "primaryMonitor": {
+      "width": 1920,
+      "height": 1080,
+      "scaleFactor": 1.25
+    }
+  },
+  "build": "kutty-jarvis debug build (branch feat/pointing-overlay-uia), cap 150, time budget 1500 ms",
+  "method": "debug_list_elements with processId (3 runs each), then debug_point_at on 3 elements with holdMs 2500; overlay state read over the WebView2 debug port mid-hold; tip = CSS translate x devicePixelRatio",
+  "apps": [
+    {
+      "label": "notepad",
+      "app": "Notepad (Windows 11, WinUI)",
+      "windowTitle": "Untitled - Notepad",
+      "windowRect": {
+        "x": 160,
+        "y": 160,
+        "width": 1440,
+        "height": 740
+      },
+      "runs": [
+        {
+          "elapsedMs": 39,
+          "elements": 25,
+          "visited": 40,
+          "partial": false
+        },
+        {
+          "elapsedMs": 40,
+          "elements": 25,
+          "visited": 40,
+          "partial": false
+        },
+        {
+          "elapsedMs": 39,
+          "elements": 25,
+          "visited": 40,
+          "partial": false
+        }
+      ],
+      "candidates": 25,
+      "capped": false,
+      "partial": false,
+      "stopReason": null,
+      "prunedOffscreen": 4,
+      "pointing": [
+        {
+          "id": 5,
+          "role": "menuitem",
+          "name": "File",
+          "rect": {
+            "x": 173,
+            "y": 212,
+            "width": 52,
+            "height": 40
+          },
+          "tipPhysical": {
+            "x": 199,
+            "y": 232
+          },
+          "errorPx": 0,
+          "inside": true,
+          "ringShown": true,
+          "devicePixelRatio": 1.25,
+          "overlayCssSize": [
+            1536,
+            864
+          ],
+          "scaleUsed": 1.25,
+          "scaleMismatch": false,
+          "flightMs": 881,
+          "overlayBecameForeground": false,
+          "targetElementsWhileOverlayShown": 25,
+          "targetElementsAfterOverlayHidden": 25
+        },
+        {
+          "id": 10,
+          "role": "button",
+          "name": "Bold (Ctrl+B)",
+          "rect": {
+            "x": 816,
+            "y": 212,
+            "width": 40,
+            "height": 40
+          },
+          "tipPhysical": {
+            "x": 836,
+            "y": 232
+          },
+          "errorPx": 0,
+          "inside": true,
+          "ringShown": true,
+          "devicePixelRatio": 1.25,
+          "overlayCssSize": [
+            1536,
+            864
+          ],
+          "scaleUsed": 1.25,
+          "scaleMismatch": false,
+          "flightMs": 745,
+          "overlayBecameForeground": false,
+          "targetElementsWhileOverlayShown": 25,
+          "targetElementsAfterOverlayHidden": 25
+        },
+        {
+          "id": 19,
+          "role": "button",
+          "name": "Settings",
+          "rect": {
+            "x": 1544,
+            "y": 212,
+            "width": 38,
+            "height": 40
+          },
+          "tipPhysical": {
+            "x": 1563,
+            "y": 232
+          },
+          "errorPx": 0,
+          "inside": true,
+          "ringShown": true,
+          "devicePixelRatio": 1.25,
+          "overlayCssSize": [
+            1536,
+            864
+          ],
+          "scaleUsed": 1.25,
+          "scaleMismatch": false,
+          "flightMs": 677,
+          "overlayBecameForeground": false,
+          "targetElementsWhileOverlayShown": 25,
+          "targetElementsAfterOverlayHidden": 25
+        }
+      ],
+      "elements": [
+        {
+          "id": 1,
+          "role": "document",
+          "name": "Text editor",
+          "rect": {
+            "x": 168,
+            "y": 253,
+            "width": 1424,
+            "height": 599
+          }
+        },
+        {
+          "id": 2,
+          "role": "tab",
+          "name": "Untitled. Unmodified.",
+          "rect": {
+            "x": 223,
+            "y": 172,
+            "width": 307,
+            "height": 40
+          }
+        },
+        {
+          "id": 3,
+          "role": "button",
+          "name": "Close Tab",
+          "rect": {
+            "x": 479,
+            "y": 177,
+            "width": 40,
+            "height": 30
+          },
+          "automationId": "CloseButton"
+        },
+        {
+          "id": 4,
+          "role": "button",
+          "name": "Add New Tab",
+          "rect": {
+            "x": 534,
+            "y": 179,
+            "width": 40,
+            "height": 30
+          },
+          "automationId": "AddButton"
+        },
+        {
+          "id": 5,
+          "role": "menuitem",
+          "name": "File",
+          "rect": {
+            "x": 173,
+            "y": 212,
+            "width": 52,
+            "height": 40
+          },
+          "automationId": "File"
+        },
+        {
+          "id": 6,
+          "role": "menuitem",
+          "name": "Edit",
+          "rect": {
+            "x": 235,
+            "y": 212,
+            "width": 55,
+            "height": 40
+          },
+          "automationId": "Edit"
+        },
+        {
+          "id": 7,
+          "role": "menuitem",
+          "name": "View",
+          "rect": {
+            "x": 300,
+            "y": 212,
+            "width": 62,
+            "height": 40
+          },
+          "automationId": "View"
+        },
+        {
+          "id": 8,
+          "role": "button",
+          "name": "Headings",
+          "rect": {
+            "x": 674,
+            "y": 212,
+            "width": 71,
+            "height": 40
+          }
+        },
+        {
+          "id": 9,
+          "role": "button",
+          "name": "Lists",
+          "rect": {
+            "x": 745,
+            "y": 212,
+            "width": 71,
+            "height": 40
+          }
+        },
+        {
+          "id": 10,
+          "role": "button",
+          "name": "Bold (Ctrl+B)",
+          "rect": {
+            "x": 816,
+            "y": 212,
+            "width": 40,
+            "height": 40
+          }
+        },
+        {
+          "id": 11,
+          "role": "button",
+          "name": "Italic (Ctrl+I)",
+          "rect": {
+            "x": 856,
+            "y": 212,
+            "width": 40,
+            "height": 40
+          }
+        },
+        {
+          "id": 12,
+          "role": "button",
+          "name": "Strikethrough (Ctrl+Shift+X)",
+          "rect": {
+            "x": 896,
+            "y": 212,
+            "width": 40,
+            "height": 40
+          }
+        },
+        {
+          "id": 13,
+          "role": "button",
+          "name": "Link (Ctrl+K)",
+          "rect": {
+            "x": 936,
+            "y": 212,
+            "width": 40,
+            "height": 40
+          }
+        },
+        {
+          "id": 14,
+          "role": "button",
+          "name": "Table",
+          "rect": {
+            "x": 976,
+            "y": 212,
+            "width": 71,
+            "height": 40
+          }
+        },
+        {
+          "id": 15,
+          "role": "button",
+          "name": "Clear formatting (Ctrl+Space)",
+          "rect": {
+            "x": 1047,
+            "y": 212,
+            "width": 40,
+            "height": 40
+          }
+        },
+        {
+          "id": 16,
+          "role": "button",
+          "name": "Writing tools",
+          "rect": {
+            "x": 1382,
+            "y": 212,
+            "width": 71,
+            "height": 40
+          },
+          "automationId": "RewriteDropDownButton"
+        },
+        {
+          "id": 17,
+          "role": "button",
+          "name": "What's new",
+          "rect": {
+            "x": 1458,
+            "y": 213,
+            "width": 38,
+            "height": 38
+          },
+          "automationId": "FREButton"
+        },
+        {
+          "id": 18,
+          "role": "button",
+          "name": "User avatar",
+          "rect": {
+            "x": 1501,
+            "y": 212,
+            "width": 38,
+            "height": 40
+          },
+          "automationId": "AvatarButton"
+        },
+        {
+          "id": 19,
+          "role": "button",
+          "name": "Settings",
+          "rect": {
+            "x": 1544,
+            "y": 212,
+            "width": 38,
+            "height": 40
+          },
+          "automationId": "SettingsButton"
+        },
+        {
+          "id": 20,
+          "role": "text",
+          "name": "Line 1, Column 1",
+          "rect": {
+            "x": 188,
+            "y": 862,
+            "width": 74,
+            "height": 20
+          },
+          "automationId": "ContentTextBlock"
+        },
+        {
+          "id": 21,
+          "role": "text",
+          "name": "0 characters",
+          "rect": {
+            "x": 299,
+            "y": 862,
+            "width": 82,
+            "height": 20
+          },
+          "automationId": "ContentTextBlock"
+        },
+        {
+          "id": 22,
+          "role": "text",
+          "name": "Plain text",
+          "rect": {
+            "x": 552,
+            "y": 852,
+            "width": 78,
+            "height": 40
+          },
+          "automationId": "ContentTextBlock"
+        },
+        {
+          "id": 23,
+          "role": "text",
+          "name": "Zoom",
+          "rect": {
+            "x": 1128,
+            "y": 862,
+            "width": 39,
+            "height": 20
+          },
+          "automationId": "ContentTextBlock"
+        },
+        {
+          "id": 24,
+          "role": "text",
+          "name": "Windows (CRLF)",
+          "rect": {
+            "x": 1213,
+            "y": 862,
+            "width": 114,
+            "height": 20
+          },
+          "automationId": "ContentTextBlock"
+        },
+        {
+          "id": 25,
+          "role": "text",
+          "name": "UTF-8",
+          "rect": {
+            "x": 1423,
+            "y": 862,
+            "width": 45,
+            "height": 20
+          },
+          "automationId": "ContentTextBlock"
+        }
+      ]
+    },
+    {
+      "label": "kutty-jarvis",
+      "app": "kutty-jarvis main window (Tauri / WebView2)",
+      "windowTitle": "kutty-jarvis",
+      "windowRect": {
+        "x": 192,
+        "y": 192,
+        "width": 1018,
+        "height": 797
+      },
+      "runs": [
+        {
+          "elapsedMs": 41,
+          "elements": 19,
+          "visited": 38,
+          "partial": false
+        },
+        {
+          "elapsedMs": 38,
+          "elements": 19,
+          "visited": 38,
+          "partial": false
+        },
+        {
+          "elapsedMs": 43,
+          "elements": 19,
+          "visited": 38,
+          "partial": false
+        }
+      ],
+      "candidates": 19,
+      "capped": false,
+      "partial": false,
+      "stopReason": null,
+      "prunedOffscreen": 2,
+      "pointing": [
+        {
+          "id": 8,
+          "role": "button",
+          "name": "List foreground window in 3 s",
+          "rect": {
+            "x": 536,
+            "y": 628,
+            "width": 311,
+            "height": 50
+          },
+          "tipPhysical": {
+            "x": 691.5,
+            "y": 653
+          },
+          "errorPx": 0,
+          "inside": true,
+          "ringShown": true,
+          "devicePixelRatio": 1.25,
+          "overlayCssSize": [
+            1536,
+            864
+          ],
+          "scaleUsed": 1.25,
+          "scaleMismatch": false,
+          "flightMs": 704,
+          "overlayBecameForeground": false,
+          "targetElementsWhileOverlayShown": 3,
+          "targetElementsAfterOverlayHidden": 19
+        },
+        {
+          "id": 10,
+          "role": "button",
+          "name": "Point",
+          "rect": {
+            "x": 790,
+            "y": 677,
+            "width": 96,
+            "height": 50
+          },
+          "tipPhysical": {
+            "x": 838,
+            "y": 702
+          },
+          "errorPx": 0,
+          "inside": true,
+          "ringShown": true,
+          "devicePixelRatio": 1.25,
+          "overlayCssSize": [
+            1536,
+            864
+          ],
+          "scaleUsed": 1.25,
+          "scaleMismatch": false,
+          "flightMs": 661,
+          "overlayBecameForeground": false,
+          "targetElementsWhileOverlayShown": 3,
+          "targetElementsAfterOverlayHidden": 19
+        },
+        {
+          "id": 17,
+          "role": "button",
+          "name": "Minimize",
+          "rect": {
+            "x": 1023,
+            "y": 193,
+            "width": 60,
+            "height": 37
+          },
+          "tipPhysical": {
+            "x": 1053,
+            "y": 211.5
+          },
+          "errorPx": 0,
+          "inside": true,
+          "ringShown": true,
+          "devicePixelRatio": 1.25,
+          "overlayCssSize": [
+            1536,
+            864
+          ],
+          "scaleUsed": 1.25,
+          "scaleMismatch": false,
+          "flightMs": 715,
+          "overlayBecameForeground": false,
+          "targetElementsWhileOverlayShown": 3,
+          "targetElementsAfterOverlayHidden": 19
+        }
+      ],
+      "elements": [
+        {
+          "id": 1,
+          "role": "pane",
+          "name": "kutty-jarvis",
+          "rect": {
+            "x": 201,
+            "y": 230,
+            "width": 1000,
+            "height": 750
+          }
+        },
+        {
+          "id": 2,
+          "role": "pane",
+          "name": "kutty-jarvis - Web content",
+          "rect": {
+            "x": 201,
+            "y": 230,
+            "width": 1000,
+            "height": 750
+          }
+        },
+        {
+          "id": 3,
+          "role": "document",
+          "name": "kutty-jarvis",
+          "rect": {
+            "x": 201,
+            "y": 230,
+            "width": 1000,
+            "height": 750
+          },
+          "automationId": "RootWebArea"
+        },
+        {
+          "id": 4,
+          "role": "text",
+          "name": "Welcome to Tauri + React",
+          "rect": {
+            "x": 211,
+            "y": 341,
+            "width": 961,
+            "height": 31
+          }
+        },
+        {
+          "id": 5,
+          "role": "text",
+          "name": "Hold Ctrl+Alt+Space to talk",
+          "rect": {
+            "x": 562,
+            "y": 422,
+            "width": 259,
+            "height": 23
+          }
+        },
+        {
+          "id": 6,
+          "role": "group",
+          "name": "Pointing debug",
+          "rect": {
+            "x": 211,
+            "y": 548,
+            "width": 961,
+            "height": 199
+          }
+        },
+        {
+          "id": 7,
+          "role": "text",
+          "name": "Pointing (debug build)",
+          "rect": {
+            "x": 211,
+            "y": 573,
+            "width": 961,
+            "height": 31
+          }
+        },
+        {
+          "id": 8,
+          "role": "button",
+          "name": "List foreground window in 3 s",
+          "rect": {
+            "x": 536,
+            "y": 628,
+            "width": 311,
+            "height": 50
+          }
+        },
+        {
+          "id": 9,
+          "role": "spinner",
+          "name": "Element number",
+          "rect": {
+            "x": 497,
+            "y": 677,
+            "width": 294,
+            "height": 50
+          }
+        },
+        {
+          "id": 10,
+          "role": "button",
+          "name": "Point",
+          "rect": {
+            "x": 790,
+            "y": 677,
+            "width": 96,
+            "height": 50
+          }
+        },
+        {
+          "id": 11,
+          "role": "link",
+          "name": "Vite logo",
+          "rect": {
+            "x": 420,
+            "y": 746,
+            "width": 181,
+            "height": 189
+          }
+        },
+        {
+          "id": 12,
+          "role": "link",
+          "name": "Tauri logo",
+          "rect": {
+            "x": 600,
+            "y": 746,
+            "width": 168,
+            "height": 189
+          }
+        },
+        {
+          "id": 13,
+          "role": "link",
+          "name": "React logo",
+          "rect": {
+            "x": 767,
+            "y": 746,
+            "width": 196,
+            "height": 189
+          }
+        },
+        {
+          "id": 14,
+          "role": "text",
+          "name": "Click on the Tauri, Vite, and React logos to learn more.",
+          "rect": {
+            "x": 450,
+            "y": 958,
+            "width": 483,
+            "height": 23
+          }
+        },
+        {
+          "id": 15,
+          "role": "menubar",
+          "name": "System",
+          "rect": {
+            "x": 201,
+            "y": 201,
+            "width": 28,
+            "height": 28
+          },
+          "automationId": "SystemMenuBar"
+        },
+        {
+          "id": 16,
+          "role": "menuitem",
+          "name": "System",
+          "rect": {
+            "x": 201,
+            "y": 201,
+            "width": 28,
+            "height": 28
+          }
+        },
+        {
+          "id": 17,
+          "role": "button",
+          "name": "Minimize",
+          "rect": {
+            "x": 1023,
+            "y": 193,
+            "width": 60,
+            "height": 37
+          },
+          "automationId": "Minimize-Restore"
+        },
+        {
+          "id": 18,
+          "role": "button",
+          "name": "Maximize",
+          "rect": {
+            "x": 1083,
+            "y": 193,
+            "width": 59,
+            "height": 37
+          },
+          "automationId": "Maximize-Restore"
+        },
+        {
+          "id": 19,
+          "role": "button",
+          "name": "Close",
+          "rect": {
+            "x": 1142,
+            "y": 193,
+            "width": 60,
+            "height": 37
+          },
+          "automationId": "Close"
+        }
+      ]
+    },
+    {
+      "label": "explorer",
+      "app": "File Explorer (separate process, Documents folder)",
+      "windowTitle": "[redacted] - File Explorer",
+      "windowRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1918,
+        "height": 1018
+      },
+      "runs": [
+        {
+          "elapsedMs": 172,
+          "elements": 83,
+          "visited": 198,
+          "partial": false
+        },
+        {
+          "elapsedMs": 177,
+          "elements": 83,
+          "visited": 198,
+          "partial": false
+        },
+        {
+          "elapsedMs": 195,
+          "elements": 83,
+          "visited": 198,
+          "partial": false
+        }
+      ],
+      "candidates": 83,
+      "capped": false,
+      "partial": false,
+      "stopReason": null,
+      "prunedOffscreen": 2,
+      "pointing": [
+        {
+          "id": 65,
+          "role": "button",
+          "name": "Back",
+          "rect": {
+            "x": 23,
+            "y": 61,
+            "width": 40,
+            "height": 40
+          },
+          "tipPhysical": {
+            "x": 43,
+            "y": 81
+          },
+          "errorPx": 0,
+          "inside": true,
+          "ringShown": true,
+          "devicePixelRatio": 1.25,
+          "overlayCssSize": [
+            1536,
+            864
+          ],
+          "scaleUsed": 1.25,
+          "scaleMismatch": false,
+          "flightMs": 941,
+          "overlayBecameForeground": false,
+          "targetElementsWhileOverlayShown": 83,
+          "targetElementsAfterOverlayHidden": 83
+        },
+        {
+          "id": 45,
+          "role": "listitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 227,
+            "y": 358,
+            "width": 747,
+            "height": 31
+          },
+          "tipPhysical": {
+            "x": 600.5,
+            "y": 373.5
+          },
+          "errorPx": 0,
+          "inside": true,
+          "ringShown": true,
+          "devicePixelRatio": 1.25,
+          "overlayCssSize": [
+            1536,
+            864
+          ],
+          "scaleUsed": 1.25,
+          "scaleMismatch": false,
+          "flightMs": 766,
+          "overlayBecameForeground": false,
+          "targetElementsWhileOverlayShown": 83,
+          "targetElementsAfterOverlayHidden": 83
+        },
+        {
+          "id": 72,
+          "role": "edit",
+          "name": "[redacted]",
+          "rect": {
+            "x": 1422,
+            "y": 61,
+            "width": 473,
+            "height": 41
+          },
+          "tipPhysical": {
+            "x": 1658.5,
+            "y": 81.5
+          },
+          "errorPx": 0,
+          "inside": true,
+          "ringShown": true,
+          "devicePixelRatio": 1.25,
+          "overlayCssSize": [
+            1536,
+            864
+          ],
+          "scaleUsed": 1.25,
+          "scaleMismatch": false,
+          "flightMs": 722,
+          "overlayBecameForeground": false,
+          "targetElementsWhileOverlayShown": 83,
+          "targetElementsAfterOverlayHidden": 83
+        }
+      ],
+      "elements": [
+        {
+          "id": 1,
+          "role": "pane",
+          "name": "[redacted]",
+          "rect": {
+            "x": 9,
+            "y": 170,
+            "width": 1900,
+            "height": 839
+          }
+        },
+        {
+          "id": 2,
+          "role": "statusbar",
+          "name": "[redacted]",
+          "rect": {
+            "x": 9,
+            "y": 978,
+            "width": 1900,
+            "height": 31
+          }
+        },
+        {
+          "id": 3,
+          "role": "group",
+          "name": "[redacted]",
+          "rect": {
+            "x": 18,
+            "y": 978,
+            "width": 72,
+            "height": 31
+          }
+        },
+        {
+          "id": 4,
+          "role": "text",
+          "name": "[redacted]",
+          "rect": {
+            "x": 24,
+            "y": 978,
+            "width": 60,
+            "height": 31
+          }
+        },
+        {
+          "id": 5,
+          "role": "group",
+          "name": "[redacted]",
+          "rect": {
+            "x": 1842,
+            "y": 978,
+            "width": 62,
+            "height": 31
+          }
+        },
+        {
+          "id": 6,
+          "role": "radio",
+          "name": "Details",
+          "rect": {
+            "x": 1842,
+            "y": 978,
+            "width": 31,
+            "height": 31
+          }
+        },
+        {
+          "id": 7,
+          "role": "radio",
+          "name": "Large Icons",
+          "rect": {
+            "x": 1873,
+            "y": 978,
+            "width": 31,
+            "height": 31
+          }
+        },
+        {
+          "id": 8,
+          "role": "pane",
+          "name": "[redacted]",
+          "rect": {
+            "x": 12,
+            "y": 170,
+            "width": 192,
+            "height": 808
+          }
+        },
+        {
+          "id": 9,
+          "role": "tree",
+          "name": "[redacted]",
+          "rect": {
+            "x": 12,
+            "y": 170,
+            "width": 192,
+            "height": 808
+          }
+        },
+        {
+          "id": 10,
+          "role": "treeitem",
+          "name": "Home",
+          "rect": {
+            "x": 75,
+            "y": 178,
+            "width": 45,
+            "height": 40
+          }
+        },
+        {
+          "id": 11,
+          "role": "treeitem",
+          "name": "Gallery",
+          "rect": {
+            "x": 75,
+            "y": 218,
+            "width": 50,
+            "height": 40
+          }
+        },
+        {
+          "id": 12,
+          "role": "treeitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 75,
+            "y": 258,
+            "width": 129,
+            "height": 40
+          }
+        },
+        {
+          "id": 13,
+          "role": "treeitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 75,
+            "y": 338,
+            "width": 59,
+            "height": 40
+          }
+        },
+        {
+          "id": 14,
+          "role": "treeitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 75,
+            "y": 378,
+            "width": 55,
+            "height": 40
+          }
+        },
+        {
+          "id": 15,
+          "role": "treeitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 75,
+            "y": 418,
+            "width": 79,
+            "height": 40
+          }
+        },
+        {
+          "id": 16,
+          "role": "treeitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 75,
+            "y": 458,
+            "width": 79,
+            "height": 40
+          }
+        },
+        {
+          "id": 17,
+          "role": "treeitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 75,
+            "y": 498,
+            "width": 42,
+            "height": 40
+          }
+        },
+        {
+          "id": 18,
+          "role": "treeitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 75,
+            "y": 538,
+            "width": 49,
+            "height": 40
+          }
+        },
+        {
+          "id": 19,
+          "role": "treeitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 75,
+            "y": 578,
+            "width": 129,
+            "height": 40
+          }
+        },
+        {
+          "id": 20,
+          "role": "treeitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 75,
+            "y": 618,
+            "width": 41,
+            "height": 40
+          }
+        },
+        {
+          "id": 21,
+          "role": "treeitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 75,
+            "y": 658,
+            "width": 26,
+            "height": 40
+          }
+        },
+        {
+          "id": 22,
+          "role": "treeitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 75,
+            "y": 698,
+            "width": 45,
+            "height": 40
+          }
+        },
+        {
+          "id": 23,
+          "role": "treeitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 75,
+            "y": 738,
+            "width": 82,
+            "height": 40
+          }
+        },
+        {
+          "id": 24,
+          "role": "treeitem",
+          "name": "This PC",
+          "rect": {
+            "x": 75,
+            "y": 818,
+            "width": 51,
+            "height": 40
+          }
+        },
+        {
+          "id": 25,
+          "role": "treeitem",
+          "name": "Network",
+          "rect": {
+            "x": 75,
+            "y": 858,
+            "width": 60,
+            "height": 40
+          }
+        },
+        {
+          "id": 26,
+          "role": "treeitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 75,
+            "y": 898,
+            "width": 38,
+            "height": 40
+          }
+        },
+        {
+          "id": 27,
+          "role": "pane",
+          "name": "[redacted]",
+          "rect": {
+            "x": 209,
+            "y": 170,
+            "width": 1700,
+            "height": 808
+          }
+        },
+        {
+          "id": 28,
+          "role": "list",
+          "name": "[redacted]",
+          "rect": {
+            "x": 209,
+            "y": 170,
+            "width": 1700,
+            "height": 808
+          }
+        },
+        {
+          "id": 29,
+          "role": "button",
+          "name": "Line up",
+          "rect": {
+            "x": 1888,
+            "y": 170,
+            "width": 21,
+            "height": 21
+          }
+        },
+        {
+          "id": 30,
+          "role": "button",
+          "name": "Page down",
+          "rect": {
+            "x": 1888,
+            "y": 600,
+            "width": 21,
+            "height": 357
+          }
+        },
+        {
+          "id": 31,
+          "role": "button",
+          "name": "Line down",
+          "rect": {
+            "x": 1888,
+            "y": 957,
+            "width": 21,
+            "height": 21
+          }
+        },
+        {
+          "id": 32,
+          "role": "header",
+          "name": "[redacted]",
+          "rect": {
+            "x": 209,
+            "y": 170,
+            "width": 1679,
+            "height": 32
+          }
+        },
+        {
+          "id": 33,
+          "role": "splitbutton",
+          "name": "Name",
+          "rect": {
+            "x": 209,
+            "y": 170,
+            "width": 340,
+            "height": 32
+          }
+        },
+        {
+          "id": 34,
+          "role": "button",
+          "name": "Filter dropdown",
+          "rect": {
+            "x": 529,
+            "y": 170,
+            "width": 19,
+            "height": 32
+          }
+        },
+        {
+          "id": 35,
+          "role": "splitbutton",
+          "name": "Date modified",
+          "rect": {
+            "x": 549,
+            "y": 170,
+            "width": 180,
+            "height": 32
+          }
+        },
+        {
+          "id": 36,
+          "role": "button",
+          "name": "Filter dropdown",
+          "rect": {
+            "x": 709,
+            "y": 170,
+            "width": 19,
+            "height": 32
+          }
+        },
+        {
+          "id": 37,
+          "role": "splitbutton",
+          "name": "Type",
+          "rect": {
+            "x": 729,
+            "y": 170,
+            "width": 150,
+            "height": 32
+          }
+        },
+        {
+          "id": 38,
+          "role": "button",
+          "name": "Filter dropdown",
+          "rect": {
+            "x": 859,
+            "y": 170,
+            "width": 19,
+            "height": 32
+          }
+        },
+        {
+          "id": 39,
+          "role": "splitbutton",
+          "name": "Size",
+          "rect": {
+            "x": 879,
+            "y": 170,
+            "width": 100,
+            "height": 32
+          }
+        },
+        {
+          "id": 40,
+          "role": "button",
+          "name": "Filter dropdown",
+          "rect": {
+            "x": 959,
+            "y": 170,
+            "width": 19,
+            "height": 32
+          }
+        },
+        {
+          "id": 41,
+          "role": "listitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 227,
+            "y": 210,
+            "width": 747,
+            "height": 31
+          }
+        },
+        {
+          "id": 42,
+          "role": "listitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 227,
+            "y": 247,
+            "width": 747,
+            "height": 31
+          }
+        },
+        {
+          "id": 43,
+          "role": "listitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 227,
+            "y": 284,
+            "width": 747,
+            "height": 31
+          }
+        },
+        {
+          "id": 44,
+          "role": "listitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 227,
+            "y": 321,
+            "width": 747,
+            "height": 31
+          }
+        },
+        {
+          "id": 45,
+          "role": "listitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 227,
+            "y": 358,
+            "width": 747,
+            "height": 31
+          }
+        },
+        {
+          "id": 46,
+          "role": "listitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 227,
+            "y": 395,
+            "width": 747,
+            "height": 31
+          }
+        },
+        {
+          "id": 47,
+          "role": "listitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 227,
+            "y": 432,
+            "width": 747,
+            "height": 31
+          }
+        },
+        {
+          "id": 48,
+          "role": "listitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 227,
+            "y": 469,
+            "width": 747,
+            "height": 31
+          }
+        },
+        {
+          "id": 49,
+          "role": "listitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 227,
+            "y": 506,
+            "width": 747,
+            "height": 31
+          }
+        },
+        {
+          "id": 50,
+          "role": "listitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 227,
+            "y": 543,
+            "width": 747,
+            "height": 31
+          }
+        },
+        {
+          "id": 51,
+          "role": "listitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 227,
+            "y": 580,
+            "width": 747,
+            "height": 31
+          }
+        },
+        {
+          "id": 52,
+          "role": "listitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 227,
+            "y": 617,
+            "width": 747,
+            "height": 31
+          }
+        },
+        {
+          "id": 53,
+          "role": "listitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 227,
+            "y": 654,
+            "width": 747,
+            "height": 31
+          }
+        },
+        {
+          "id": 54,
+          "role": "listitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 227,
+            "y": 691,
+            "width": 747,
+            "height": 31
+          }
+        },
+        {
+          "id": 55,
+          "role": "listitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 227,
+            "y": 728,
+            "width": 747,
+            "height": 31
+          }
+        },
+        {
+          "id": 56,
+          "role": "listitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 227,
+            "y": 765,
+            "width": 747,
+            "height": 31
+          }
+        },
+        {
+          "id": 57,
+          "role": "listitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 227,
+            "y": 802,
+            "width": 747,
+            "height": 31
+          }
+        },
+        {
+          "id": 58,
+          "role": "listitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 227,
+            "y": 839,
+            "width": 747,
+            "height": 31
+          }
+        },
+        {
+          "id": 59,
+          "role": "listitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 227,
+            "y": 876,
+            "width": 747,
+            "height": 31
+          }
+        },
+        {
+          "id": 60,
+          "role": "listitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 227,
+            "y": 913,
+            "width": 747,
+            "height": 31
+          }
+        },
+        {
+          "id": 61,
+          "role": "listitem",
+          "name": "[redacted]",
+          "rect": {
+            "x": 227,
+            "y": 950,
+            "width": 747,
+            "height": 31
+          }
+        },
+        {
+          "id": 62,
+          "role": "tab",
+          "name": "[redacted]",
+          "rect": {
+            "x": 15,
+            "y": 11,
+            "width": 310,
+            "height": 40
+          }
+        },
+        {
+          "id": 63,
+          "role": "button",
+          "name": "Close Tab",
+          "rect": {
+            "x": 273,
+            "y": 16,
+            "width": 40,
+            "height": 30
+          }
+        },
+        {
+          "id": 64,
+          "role": "button",
+          "name": "Add New Tab",
+          "rect": {
+            "x": 329,
+            "y": 17,
+            "width": 40,
+            "height": 30
+          }
+        },
+        {
+          "id": 65,
+          "role": "button",
+          "name": "Back",
+          "rect": {
+            "x": 23,
+            "y": 61,
+            "width": 40,
+            "height": 40
+          }
+        },
+        {
+          "id": 66,
+          "role": "button",
+          "name": "Forward",
+          "rect": {
+            "x": 83,
+            "y": 61,
+            "width": 40,
+            "height": 40
+          }
+        },
+        {
+          "id": 67,
+          "role": "button",
+          "name": "[redacted]",
+          "rect": {
+            "x": 143,
+            "y": 61,
+            "width": 40,
+            "height": 40
+          }
+        },
+        {
+          "id": 68,
+          "role": "button",
+          "name": "[redacted]",
+          "rect": {
+            "x": 203,
+            "y": 61,
+            "width": 40,
+            "height": 40
+          }
+        },
+        {
+          "id": 69,
+          "role": "edit",
+          "name": "Address Bar",
+          "rect": {
+            "x": 261,
+            "y": 61,
+            "width": 1151,
+            "height": 40
+          }
+        },
+        {
+          "id": 70,
+          "role": "splitbutton",
+          "name": "[redacted]",
+          "rect": {
+            "x": 278,
+            "y": 66,
+            "width": 64,
+            "height": 30
+          }
+        },
+        {
+          "id": 71,
+          "role": "splitbutton",
+          "name": "[redacted]",
+          "rect": {
+            "x": 342,
+            "y": 66,
+            "width": 140,
+            "height": 30
+          }
+        },
+        {
+          "id": 72,
+          "role": "edit",
+          "name": "[redacted]",
+          "rect": {
+            "x": 1422,
+            "y": 61,
+            "width": 473,
+            "height": 41
+          }
+        },
+        {
+          "id": 73,
+          "role": "button",
+          "name": "New",
+          "rect": {
+            "x": 17,
+            "y": 112,
+            "width": 106,
+            "height": 56
+          }
+        },
+        {
+          "id": 74,
+          "role": "button",
+          "name": "Cut",
+          "rect": {
+            "x": 136,
+            "y": 112,
+            "width": 50,
+            "height": 56
+          }
+        },
+        {
+          "id": 75,
+          "role": "button",
+          "name": "Copy",
+          "rect": {
+            "x": 196,
+            "y": 112,
+            "width": 50,
+            "height": 56
+          }
+        },
+        {
+          "id": 76,
+          "role": "button",
+          "name": "Paste",
+          "rect": {
+            "x": 256,
+            "y": 112,
+            "width": 50,
+            "height": 56
+          }
+        },
+        {
+          "id": 77,
+          "role": "button",
+          "name": "Rename",
+          "rect": {
+            "x": 316,
+            "y": 112,
+            "width": 50,
+            "height": 56
+          }
+        },
+        {
+          "id": 78,
+          "role": "button",
+          "name": "Share",
+          "rect": {
+            "x": 376,
+            "y": 112,
+            "width": 50,
+            "height": 56
+          }
+        },
+        {
+          "id": 79,
+          "role": "button",
+          "name": "Delete",
+          "rect": {
+            "x": 436,
+            "y": 112,
+            "width": 50,
+            "height": 56
+          }
+        },
+        {
+          "id": 80,
+          "role": "button",
+          "name": "Sort",
+          "rect": {
+            "x": 499,
+            "y": 112,
+            "width": 104,
+            "height": 56
+          }
+        },
+        {
+          "id": 81,
+          "role": "button",
+          "name": "View",
+          "rect": {
+            "x": 609,
+            "y": 112,
+            "width": 108,
+            "height": 56
+          }
+        },
+        {
+          "id": 82,
+          "role": "button",
+          "name": "More options",
+          "rect": {
+            "x": 725,
+            "y": 112,
+            "width": 60,
+            "height": 56
+          }
+        },
+        {
+          "id": 83,
+          "role": "button",
+          "name": "Preview",
+          "rect": {
+            "x": 1785,
+            "y": 112,
+            "width": 111,
+            "height": 56
+          }
+        }
+      ]
+    },
+    {
+      "label": "edge",
+      "app": "Microsoft Edge 158 (temporary profile, MDN Accessibility page)",
+      "windowTitle": "Accessibility | MDN - Microsoft Edge",
+      "windowRect": {
+        "x": 13,
+        "y": 13,
+        "width": 1313,
+        "height": 995
+      },
+      "runs": [
+        {
+          "elapsedMs": 130,
+          "elements": 70,
+          "visited": 139,
+          "partial": false
+        },
+        {
+          "elapsedMs": 128,
+          "elements": 70,
+          "visited": 139,
+          "partial": false
+        },
+        {
+          "elapsedMs": 148,
+          "elements": 70,
+          "visited": 139,
+          "partial": false
+        }
+      ],
+      "candidates": 70,
+      "capped": false,
+      "partial": false,
+      "stopReason": null,
+      "prunedOffscreen": 13,
+      "pointing": [
+        {
+          "id": 6,
+          "role": "button",
+          "name": "Back",
+          "rect": {
+            "x": 28,
+            "y": 68,
+            "width": 40,
+            "height": 40
+          },
+          "tipPhysical": {
+            "x": 48,
+            "y": 88
+          },
+          "errorPx": 0,
+          "inside": true,
+          "ringShown": true,
+          "devicePixelRatio": 1.25,
+          "overlayCssSize": [
+            1536,
+            864
+          ],
+          "scaleUsed": 1.25,
+          "scaleMismatch": false,
+          "flightMs": 939,
+          "overlayBecameForeground": false,
+          "targetElementsWhileOverlayShown": 70,
+          "targetElementsAfterOverlayHidden": 70
+        },
+        {
+          "id": 10,
+          "role": "edit",
+          "name": "Address and search bar",
+          "rect": {
+            "x": 198,
+            "y": 73,
+            "width": 747,
+            "height": 30
+          },
+          "tipPhysical": {
+            "x": 571.5,
+            "y": 88
+          },
+          "errorPx": 0,
+          "inside": true,
+          "ringShown": true,
+          "devicePixelRatio": 1.25,
+          "overlayCssSize": [
+            1536,
+            864
+          ],
+          "scaleUsed": 1.25,
+          "scaleMismatch": false,
+          "flightMs": 825,
+          "overlayBecameForeground": false,
+          "targetElementsWhileOverlayShown": 70,
+          "targetElementsAfterOverlayHidden": 70
+        },
+        {
+          "id": 42,
+          "role": "link",
+          "name": "W3C - Accessibility (external)",
+          "rect": {
+            "x": 455,
+            "y": 877,
+            "width": 209,
+            "height": 25
+          },
+          "tipPhysical": {
+            "x": 559.5,
+            "y": 889.5
+          },
+          "errorPx": 0,
+          "inside": true,
+          "ringShown": true,
+          "devicePixelRatio": 1.25,
+          "overlayCssSize": [
+            1536,
+            864
+          ],
+          "scaleUsed": 1.25,
+          "scaleMismatch": false,
+          "flightMs": 719,
+          "overlayBecameForeground": false,
+          "targetElementsWhileOverlayShown": 70,
+          "targetElementsAfterOverlayHidden": 70
+        }
+      ],
+      "elements": [
+        {
+          "id": 1,
+          "role": "pane",
+          "name": "Accessibility | MDN - Microsoft Edge",
+          "rect": {
+            "x": 23,
+            "y": 13,
+            "width": 1295,
+            "height": 987
+          }
+        },
+        {
+          "id": 2,
+          "role": "button",
+          "name": "Minimize",
+          "rect": {
+            "x": 1145,
+            "y": 14,
+            "width": 58,
+            "height": 49
+          },
+          "automationId": "view_2"
+        },
+        {
+          "id": 3,
+          "role": "button",
+          "name": "Maximize",
+          "rect": {
+            "x": 1203,
+            "y": 14,
+            "width": 58,
+            "height": 49
+          },
+          "automationId": "view_3"
+        },
+        {
+          "id": 4,
+          "role": "button",
+          "name": "Close",
+          "rect": {
+            "x": 1260,
+            "y": 14,
+            "width": 58,
+            "height": 49
+          },
+          "automationId": "view_7"
+        },
+        {
+          "id": 5,
+          "role": "toolbar",
+          "name": "App bar",
+          "rect": {
+            "x": 23,
+            "y": 63,
+            "width": 1295,
+            "height": 50
+          },
+          "automationId": "view_1000"
+        },
+        {
+          "id": 6,
+          "role": "button",
+          "name": "Back",
+          "rect": {
+            "x": 28,
+            "y": 68,
+            "width": 40,
+            "height": 40
+          },
+          "automationId": "view_1001"
+        },
+        {
+          "id": 7,
+          "role": "button",
+          "name": "Refresh",
+          "rect": {
+            "x": 73,
+            "y": 68,
+            "width": 40,
+            "height": 40
+          },
+          "automationId": "view_1003"
+        },
+        {
+          "id": 8,
+          "role": "button",
+          "name": "Home",
+          "rect": {
+            "x": 118,
+            "y": 68,
+            "width": 40,
+            "height": 40
+          },
+          "automationId": "view_1004"
+        },
+        {
+          "id": 9,
+          "role": "button",
+          "name": "View site information",
+          "rect": {
+            "x": 168,
+            "y": 73,
+            "width": 30,
+            "height": 30
+          },
+          "automationId": "view_1015"
+        },
+        {
+          "id": 10,
+          "role": "edit",
+          "name": "Address and search bar",
+          "rect": {
+            "x": 198,
+            "y": 73,
+            "width": 747,
+            "height": 30
+          },
+          "automationId": "view_1017"
+        },
+        {
+          "id": 11,
+          "role": "button",
+          "name": "App available. Install MDN Web Docs",
+          "rect": {
+            "x": 949,
+            "y": 73,
+            "width": 30,
+            "height": 30
+          }
+        },
+        {
+          "id": 12,
+          "role": "button",
+          "name": "Enter Reading mode (F9)",
+          "rect": {
+            "x": 984,
+            "y": 73,
+            "width": 30,
+            "height": 30
+          }
+        },
+        {
+          "id": 13,
+          "role": "button",
+          "name": "Add this page to favorites (Ctrl+D)",
+          "rect": {
+            "x": 1019,
+            "y": 73,
+            "width": 30,
+            "height": 30
+          },
+          "automationId": "view_1006"
+        },
+        {
+          "id": 14,
+          "role": "button",
+          "name": "Favorites",
+          "rect": {
+            "x": 1059,
+            "y": 68,
+            "width": 40,
+            "height": 40
+          },
+          "automationId": "view_1007"
+        },
+        {
+          "id": 15,
+          "role": "button",
+          "name": "Personal Profile",
+          "rect": {
+            "x": 1104,
+            "y": 68,
+            "width": 40,
+            "height": 40
+          },
+          "automationId": "view_1009"
+        },
+        {
+          "id": 16,
+          "role": "button",
+          "name": "Settings and more (Alt+F)",
+          "rect": {
+            "x": 1149,
+            "y": 68,
+            "width": 40,
+            "height": 40
+          },
+          "automationId": "view_1011"
+        },
+        {
+          "id": 17,
+          "role": "button",
+          "name": "Chat",
+          "rect": {
+            "x": 1194,
+            "y": 68,
+            "width": 89,
+            "height": 40
+          },
+          "automationId": "view_1079"
+        },
+        {
+          "id": 18,
+          "role": "button",
+          "name": "Copilot menu",
+          "rect": {
+            "x": 1283,
+            "y": 68,
+            "width": 30,
+            "height": 40
+          },
+          "automationId": "view_1096"
+        },
+        {
+          "id": 19,
+          "role": "document",
+          "name": "Accessibility | MDN",
+          "rect": {
+            "x": 28,
+            "y": 113,
+            "width": 1285,
+            "height": 882
+          },
+          "automationId": "RootWebArea"
+        },
+        {
+          "id": 20,
+          "role": "link",
+          "name": "Google Cloud Build, govern, and optimize agents with Gemini Enterprise Agent Platform. Try it now. Get Started",
+          "rect": {
+            "x": 48,
+            "y": 113,
+            "width": 773,
+            "height": 68
+          }
+        },
+        {
+          "id": 21,
+          "role": "image",
+          "name": "Google Cloud",
+          "rect": {
+            "x": 50,
+            "y": 115,
+            "width": 63,
+            "height": 63
+          }
+        },
+        {
+          "id": 22,
+          "role": "link",
+          "name": "AD",
+          "rect": {
+            "x": 1239,
+            "y": 123,
+            "width": 30,
+            "height": 21
+          }
+        },
+        {
+          "id": 23,
+          "role": "link",
+          "name": "MDN",
+          "rect": {
+            "x": 32,
+            "y": 230,
+            "width": 124,
+            "height": 51
+          }
+        },
+        {
+          "id": 24,
+          "role": "button",
+          "name": "Search the site",
+          "rect": {
+            "x": 1131,
+            "y": 234,
+            "width": 100,
+            "height": 43
+          }
+        },
+        {
+          "id": 25,
+          "role": "button",
+          "name": "Toggle navigation",
+          "rect": {
+            "x": 1236,
+            "y": 226,
+            "width": 58,
+            "height": 59
+          }
+        },
+        {
+          "id": 26,
+          "role": "button",
+          "name": "Toggle sidebar",
+          "rect": {
+            "x": 28,
+            "y": 285,
+            "width": 42,
+            "height": 39
+          }
+        },
+        {
+          "id": 27,
+          "role": "listitem",
+          "name": "Web",
+          "rect": {
+            "x": 92,
+            "y": 289,
+            "width": 79,
+            "height": 31
+          }
+        },
+        {
+          "id": 28,
+          "role": "link",
+          "name": "Web",
+          "rect": {
+            "x": 92,
+            "y": 289,
+            "width": 44,
+            "height": 31
+          }
+        },
+        {
+          "id": 29,
+          "role": "listitem",
+          "name": "Accessibility",
+          "rect": {
+            "x": 170,
+            "y": 289,
+            "width": 119,
+            "height": 31
+          }
+        },
+        {
+          "id": 30,
+          "role": "link",
+          "name": "Accessibility",
+          "rect": {
+            "x": 170,
+            "y": 289,
+            "width": 119,
+            "height": 31
+          }
+        },
+        {
+          "id": 31,
+          "role": "button",
+          "name": "Switch color theme",
+          "rect": {
+            "x": 973,
+            "y": 285,
+            "width": 116,
+            "height": 39
+          }
+        },
+        {
+          "id": 32,
+          "role": "button",
+          "name": "English (US)",
+          "rect": {
+            "x": 1108,
+            "y": 285,
+            "width": 166,
+            "height": 39
+          }
+        },
+        {
+          "id": 33,
+          "role": "text",
+          "name": "Accessibility",
+          "rect": {
+            "x": 388,
+            "y": 344,
+            "width": 886,
+            "height": 64
+          }
+        },
+        {
+          "id": 34,
+          "role": "text",
+          "name": "Accessibility",
+          "rect": {
+            "x": 388,
+            "y": 432,
+            "width": 127,
+            "height": 25
+          }
+        },
+        {
+          "id": 35,
+          "role": "text",
+          "name": "(often abbreviated to",
+          "rect": {
+            "x": 514,
+            "y": 432,
+            "width": 207,
+            "height": 25
+          }
+        },
+        {
+          "id": 36,
+          "role": "text",
+          "name": "A11y",
+          "rect": {
+            "x": 720,
+            "y": 432,
+            "width": 44,
+            "height": 25
+          }
+        },
+        {
+          "id": 37,
+          "role": "text",
+          "name": "— as in, \"a\", then 11 characters, and then \"y\") in web development means enabling as many people as possible to use websites, even when those people's abilities are limited in some way.",
+          "rect": {
+            "x": 388,
+            "y": 432,
+            "width": 872,
+            "height": 95
+          }
+        },
+        {
+          "id": 38,
+          "role": "text",
+          "name": "For many people, technology makes things easier. For people with disabilities, technology makes things possible. Accessibility means developing content to be as accessible as possible, no matter an individual's physical and cognitive abilities and how they access the web.",
+          "rect": {
+            "x": 388,
+            "y": 557,
+            "width": 850,
+            "height": 130
+          }
+        },
+        {
+          "id": 39,
+          "role": "text",
+          "name": "The Web is fundamentally designed to work for all people",
+          "rect": {
+            "x": 433,
+            "y": 737,
+            "width": 559,
+            "height": 25
+          }
+        },
+        {
+          "id": 40,
+          "role": "text",
+          "name": ", whatever their hardware, software, language, location, or ability. When the Web meets this goal, it is accessible to people with a diverse range of hearing, movement, sight, and cognitive ability.",
+          "rect": {
+            "x": 433,
+            "y": 737,
+            "width": 797,
+            "height": 130
+          }
+        },
+        {
+          "id": 41,
+          "role": "text",
+          "name": "– (",
+          "rect": {
+            "x": 433,
+            "y": 877,
+            "width": 23,
+            "height": 25
+          }
+        },
+        {
+          "id": 42,
+          "role": "link",
+          "name": "W3C - Accessibility (external)",
+          "rect": {
+            "x": 455,
+            "y": 877,
+            "width": 209,
+            "height": 25
+          }
+        },
+        {
+          "id": 43,
+          "role": "text",
+          "name": ")",
+          "rect": {
+            "x": 663,
+            "y": 877,
+            "width": 8,
+            "height": 25
+          }
+        },
+        {
+          "id": 44,
+          "role": "text",
+          "name": "In this article",
+          "rect": {
+            "x": 48,
+            "y": 324,
+            "width": 210,
+            "height": 91
+          }
+        },
+        {
+          "id": 45,
+          "role": "listitem",
+          "name": "Beginner's tutorials",
+          "rect": {
+            "x": 48,
+            "y": 414,
+            "width": 210,
+            "height": 41
+          }
+        },
+        {
+          "id": 46,
+          "role": "link",
+          "name": "Beginner's tutorials",
+          "rect": {
+            "x": 50,
+            "y": 414,
+            "width": 202,
+            "height": 41
+          }
+        },
+        {
+          "id": 47,
+          "role": "listitem",
+          "name": "Accessibility guides",
+          "rect": {
+            "x": 48,
+            "y": 454,
+            "width": 210,
+            "height": 41
+          }
+        },
+        {
+          "id": 48,
+          "role": "link",
+          "name": "Accessibility guides",
+          "rect": {
+            "x": 50,
+            "y": 454,
+            "width": 208,
+            "height": 41
+          }
+        },
+        {
+          "id": 49,
+          "role": "listitem",
+          "name": "References",
+          "rect": {
+            "x": 48,
+            "y": 494,
+            "width": 210,
+            "height": 41
+          }
+        },
+        {
+          "id": 50,
+          "role": "link",
+          "name": "References",
+          "rect": {
+            "x": 50,
+            "y": 494,
+            "width": 127,
+            "height": 41
+          }
+        },
+        {
+          "id": 51,
+          "role": "listitem",
+          "name": "See also",
+          "rect": {
+            "x": 48,
+            "y": 534,
+            "width": 210,
+            "height": 41
+          }
+        },
+        {
+          "id": 52,
+          "role": "link",
+          "name": "See also",
+          "rect": {
+            "x": 50,
+            "y": 534,
+            "width": 101,
+            "height": 41
+          }
+        },
+        {
+          "id": 53,
+          "role": "link",
+          "name": "AWS AWS Training & Certification Roles change. AWS credentials travel with you. Get certified",
+          "rect": {
+            "x": 49,
+            "y": 605,
+            "width": 220,
+            "height": 229
+          }
+        },
+        {
+          "id": 54,
+          "role": "image",
+          "name": "AWS",
+          "rect": {
+            "x": 49,
+            "y": 605,
+            "width": 220,
+            "height": 221
+          }
+        },
+        {
+          "id": 55,
+          "role": "link",
+          "name": "AD",
+          "rect": {
+            "x": 234,
+            "y": 610,
+            "width": 30,
+            "height": 22
+          }
+        },
+        {
+          "id": 56,
+          "role": "group",
+          "name": "Beginner's tutorials",
+          "rect": {
+            "x": 388,
+            "y": 967,
+            "width": 886,
+            "height": 1541
+          }
+        },
+        {
+          "id": 57,
+          "role": "link",
+          "name": "Beginner's tutorials",
+          "rect": {
+            "x": 388,
+            "y": 967,
+            "width": 333,
+            "height": 50
+          }
+        },
+        {
+          "id": 58,
+          "role": "tablist",
+          "name": "Tab bar",
+          "rect": {
+            "x": 25,
+            "y": 13,
+            "width": 1120,
+            "height": 52
+          }
+        },
+        {
+          "id": 59,
+          "role": "button",
+          "name": "Search tabs",
+          "rect": {
+            "x": 28,
+            "y": 13,
+            "width": 40,
+            "height": 45
+          },
+          "automationId": "view_1052"
+        },
+        {
+          "id": 60,
+          "role": "tab",
+          "name": "Accessibility | MDN - Memory usage - 146 MB",
+          "rect": {
+            "x": 63,
+            "y": 13,
+            "width": 320,
+            "height": 52
+          },
+          "automationId": "view_24"
+        },
+        {
+          "id": 61,
+          "role": "button",
+          "name": "Close tab",
+          "rect": {
+            "x": 343,
+            "y": 28,
+            "width": 20,
+            "height": 20
+          },
+          "automationId": "view_27"
+        },
+        {
+          "id": 62,
+          "role": "button",
+          "name": "New Tab",
+          "rect": {
+            "x": 378,
+            "y": 13,
+            "width": 40,
+            "height": 52
+          },
+          "automationId": "view_28"
+        },
+        {
+          "id": 63,
+          "role": "window",
+          "name": "Sync your profile",
+          "rect": {
+            "x": 358,
+            "y": 109,
+            "width": 625,
+            "height": 420
+          }
+        },
+        {
+          "id": 64,
+          "role": "document",
+          "name": "We are now syncing your browsing data across all your devices",
+          "rect": {
+            "x": 358,
+            "y": 119,
+            "width": 625,
+            "height": 400
+          },
+          "automationId": "RootWebArea"
+        },
+        {
+          "id": 65,
+          "role": "text",
+          "name": "<email> signed in on this device, so we've also signed you in to Microsoft Edge.",
+          "rect": {
+            "x": 378,
+            "y": 245,
+            "width": 562,
+            "height": 48
+          }
+        },
+        {
+          "id": 66,
+          "role": "text",
+          "name": "Always have access to your favorites, passwords, history, and more anywhere you use Microsoft Edge.",
+          "rect": {
+            "x": 378,
+            "y": 315,
+            "width": 513,
+            "height": 48
+          }
+        },
+        {
+          "id": 67,
+          "role": "text",
+          "name": "To sign out, go to Settings > Profiles.",
+          "rect": {
+            "x": 378,
+            "y": 385,
+            "width": 285,
+            "height": 23
+          }
+        },
+        {
+          "id": 68,
+          "role": "link",
+          "name": "Microsoft Privacy Statement",
+          "rect": {
+            "x": 378,
+            "y": 455,
+            "width": 247,
+            "height": 28
+          },
+          "automationId": "privacy-link"
+        },
+        {
+          "id": 69,
+          "role": "button",
+          "name": "Got it",
+          "rect": {
+            "x": 770,
+            "y": 449,
+            "width": 71,
+            "height": 40
+          },
+          "automationId": "got-it-button"
+        },
+        {
+          "id": 70,
+          "role": "button",
+          "name": "Customize",
+          "rect": {
+            "x": 855,
+            "y": 449,
+            "width": 108,
+            "height": 40
+          },
+          "automationId": "customize-button"
+        }
+      ]
+    },
+    {
+      "label": "vscode",
+      "app": "VS Code (Electron, Chromium 150, temporary profile, this repo open)",
+      "windowTitle": "README.md - <worktree> - Visual Studio Code",
+      "windowRect": {
+        "x": 51,
+        "y": 0,
+        "width": 1823,
+        "height": 1030
+      },
+      "runs": [
+        {
+          "elapsedMs": 139,
+          "elements": 127,
+          "visited": 239,
+          "partial": false
+        },
+        {
+          "elapsedMs": 133,
+          "elements": 127,
+          "visited": 239,
+          "partial": false
+        },
+        {
+          "elapsedMs": 135,
+          "elements": 127,
+          "visited": 239,
+          "partial": false
+        }
+      ],
+      "candidates": 127,
+      "capped": false,
+      "partial": false,
+      "stopReason": null,
+      "prunedOffscreen": 5,
+      "pointing": [
+        {
+          "id": 14,
+          "role": "button",
+          "name": "Go Back (Alt+LeftArrow)",
+          "rect": {
+            "x": 587,
+            "y": 8,
+            "width": 28,
+            "height": 28
+          },
+          "tipPhysical": {
+            "x": 601,
+            "y": 22
+          },
+          "errorPx": 0,
+          "inside": true,
+          "ringShown": true,
+          "devicePixelRatio": 1.25,
+          "overlayCssSize": [
+            1536,
+            864
+          ],
+          "scaleUsed": 1.25,
+          "scaleMismatch": false,
+          "flightMs": 832,
+          "overlayBecameForeground": false,
+          "targetElementsWhileOverlayShown": 127,
+          "targetElementsAfterOverlayHidden": 127
+        },
+        {
+          "id": 48,
+          "role": "treeitem",
+          "name": "app",
+          "rect": {
+            "x": 126,
+            "y": 202,
+            "width": 362,
+            "height": 28
+          },
+          "tipPhysical": {
+            "x": 307,
+            "y": 216
+          },
+          "errorPx": 0,
+          "inside": true,
+          "ringShown": true,
+          "devicePixelRatio": 1.25,
+          "overlayCssSize": [
+            1536,
+            864
+          ],
+          "scaleUsed": 1.25,
+          "scaleMismatch": false,
+          "flightMs": 858,
+          "overlayBecameForeground": false,
+          "targetElementsWhileOverlayShown": 127,
+          "targetElementsAfterOverlayHidden": 127
+        },
+        {
+          "id": 26,
+          "role": "button",
+          "name": "Toggle Panel (Ctrl+J)",
+          "rect": {
+            "x": 1627,
+            "y": 8,
+            "width": 28,
+            "height": 28
+          },
+          "tipPhysical": {
+            "x": 1641,
+            "y": 22
+          },
+          "errorPx": 0,
+          "inside": true,
+          "ringShown": true,
+          "devicePixelRatio": 1.25,
+          "overlayCssSize": [
+            1536,
+            864
+          ],
+          "scaleUsed": 1.25,
+          "scaleMismatch": false,
+          "flightMs": 738,
+          "overlayBecameForeground": false,
+          "targetElementsWhileOverlayShown": 127,
+          "targetElementsAfterOverlayHidden": 127
+        }
+      ],
+      "elements": [
+        {
+          "id": 1,
+          "role": "pane",
+          "name": "README.md - <worktree> - Visual Studio Code",
+          "rect": {
+            "x": 60,
+            "y": 0,
+            "width": 1805,
+            "height": 1022
+          }
+        },
+        {
+          "id": 2,
+          "role": "button",
+          "name": "Minimize",
+          "rect": {
+            "x": 1694,
+            "y": 1,
+            "width": 57,
+            "height": 42
+          }
+        },
+        {
+          "id": 3,
+          "role": "button",
+          "name": "Maximize",
+          "rect": {
+            "x": 1750,
+            "y": 1,
+            "width": 58,
+            "height": 42
+          }
+        },
+        {
+          "id": 4,
+          "role": "button",
+          "name": "Close",
+          "rect": {
+            "x": 1808,
+            "y": 1,
+            "width": 58,
+            "height": 42
+          }
+        },
+        {
+          "id": 5,
+          "role": "document",
+          "name": "README.md - <worktree> - Visual Studio Code",
+          "rect": {
+            "x": 60,
+            "y": 0,
+            "width": 1805,
+            "height": 1022
+          },
+          "automationId": "RootWebArea"
+        },
+        {
+          "id": 6,
+          "role": "menuitem",
+          "name": "File",
+          "rect": {
+            "x": 103,
+            "y": 0,
+            "width": 46,
+            "height": 44
+          }
+        },
+        {
+          "id": 7,
+          "role": "menuitem",
+          "name": "Edit",
+          "rect": {
+            "x": 148,
+            "y": 0,
+            "width": 48,
+            "height": 44
+          }
+        },
+        {
+          "id": 8,
+          "role": "menuitem",
+          "name": "Selection",
+          "rect": {
+            "x": 195,
+            "y": 0,
+            "width": 86,
+            "height": 44
+          }
+        },
+        {
+          "id": 9,
+          "role": "menuitem",
+          "name": "View",
+          "rect": {
+            "x": 280,
+            "y": 0,
+            "width": 55,
+            "height": 44
+          }
+        },
+        {
+          "id": 10,
+          "role": "menuitem",
+          "name": "Go",
+          "rect": {
+            "x": 334,
+            "y": 0,
+            "width": 42,
+            "height": 44
+          }
+        },
+        {
+          "id": 11,
+          "role": "menuitem",
+          "name": "Run",
+          "rect": {
+            "x": 375,
+            "y": 0,
+            "width": 49,
+            "height": 44
+          }
+        },
+        {
+          "id": 12,
+          "role": "menuitem",
+          "name": "Terminal",
+          "rect": {
+            "x": 423,
+            "y": 0,
+            "width": 82,
+            "height": 44
+          }
+        },
+        {
+          "id": 13,
+          "role": "menuitem",
+          "name": "Help",
+          "rect": {
+            "x": 504,
+            "y": 0,
+            "width": 54,
+            "height": 44
+          }
+        },
+        {
+          "id": 14,
+          "role": "button",
+          "name": "Go Back (Alt+LeftArrow)",
+          "rect": {
+            "x": 587,
+            "y": 8,
+            "width": 28,
+            "height": 28
+          }
+        },
+        {
+          "id": 15,
+          "role": "button",
+          "name": "Go Forward (Alt+RightArrow)",
+          "rect": {
+            "x": 619,
+            "y": 8,
+            "width": 29,
+            "height": 28
+          }
+        },
+        {
+          "id": 16,
+          "role": "toolbar",
+          "name": "Agent Status",
+          "rect": {
+            "x": 652,
+            "y": 7,
+            "width": 686,
+            "height": 30
+          }
+        },
+        {
+          "id": 17,
+          "role": "button",
+          "name": "Open Quick Access",
+          "rect": {
+            "x": 653,
+            "y": 8,
+            "width": 621,
+            "height": 28
+          }
+        },
+        {
+          "id": 18,
+          "role": "button",
+          "name": "Toggle Chat",
+          "rect": {
+            "x": 1273,
+            "y": 8,
+            "width": 42,
+            "height": 28
+          }
+        },
+        {
+          "id": 19,
+          "role": "button",
+          "name": "Toggle Chat",
+          "rect": {
+            "x": 1280,
+            "y": 8,
+            "width": 29,
+            "height": 28
+          }
+        },
+        {
+          "id": 20,
+          "role": "button",
+          "name": "More Actions",
+          "rect": {
+            "x": 1312,
+            "y": 8,
+            "width": 24,
+            "height": 31
+          }
+        },
+        {
+          "id": 21,
+          "role": "button",
+          "name": "Open in Agents Window (Ctrl+Shift+Alt+A)",
+          "rect": {
+            "x": 1350,
+            "y": 8,
+            "width": 31,
+            "height": 28
+          }
+        },
+        {
+          "id": 22,
+          "role": "button",
+          "name": "Sign In",
+          "rect": {
+            "x": 1385,
+            "y": 8,
+            "width": 68,
+            "height": 28
+          }
+        },
+        {
+          "id": 23,
+          "role": "toolbar",
+          "name": "Title actions",
+          "rect": {
+            "x": 1562,
+            "y": 0,
+            "width": 126,
+            "height": 44
+          }
+        },
+        {
+          "id": 24,
+          "role": "button",
+          "name": "Customize Layout...",
+          "rect": {
+            "x": 1562,
+            "y": 8,
+            "width": 28,
+            "height": 28
+          }
+        },
+        {
+          "id": 25,
+          "role": "button",
+          "name": "Toggle Primary Side Bar (Ctrl+B)",
+          "rect": {
+            "x": 1595,
+            "y": 8,
+            "width": 28,
+            "height": 28
+          }
+        },
+        {
+          "id": 26,
+          "role": "button",
+          "name": "Toggle Panel (Ctrl+J)",
+          "rect": {
+            "x": 1627,
+            "y": 8,
+            "width": 28,
+            "height": 28
+          }
+        },
+        {
+          "id": 27,
+          "role": "button",
+          "name": "Toggle Secondary Side Bar (Ctrl+Alt+B)",
+          "rect": {
+            "x": 1660,
+            "y": 8,
+            "width": 28,
+            "height": 28
+          }
+        },
+        {
+          "id": 28,
+          "role": "tablist",
+          "name": "Active View Switcher",
+          "rect": {
+            "x": 69,
+            "y": 48,
+            "width": 46,
+            "height": 266
+          }
+        },
+        {
+          "id": 29,
+          "role": "tab",
+          "name": "Explorer (Ctrl+Shift+E)",
+          "rect": {
+            "x": 69,
+            "y": 48,
+            "width": 46,
+            "height": 46
+          }
+        },
+        {
+          "id": 30,
+          "role": "tab",
+          "name": "Search (Ctrl+Shift+F)",
+          "rect": {
+            "x": 69,
+            "y": 103,
+            "width": 46,
+            "height": 46
+          }
+        },
+        {
+          "id": 31,
+          "role": "tab",
+          "name": "Source Control (Ctrl+Shift+G) - 3 pending changes",
+          "rect": {
+            "x": 69,
+            "y": 158,
+            "width": 46,
+            "height": 46
+          }
+        },
+        {
+          "id": 32,
+          "role": "tab",
+          "name": "Run and Debug (Ctrl+Shift+D)",
+          "rect": {
+            "x": 69,
+            "y": 213,
+            "width": 46,
+            "height": 46
+          }
+        },
+        {
+          "id": 33,
+          "role": "tab",
+          "name": "Extensions (Ctrl+Shift+X)",
+          "rect": {
+            "x": 69,
+            "y": 268,
+            "width": 46,
+            "height": 46
+          }
+        },
+        {
+          "id": 34,
+          "role": "toolbar",
+          "name": "Manage",
+          "rect": {
+            "x": 69,
+            "y": 877,
+            "width": 46,
+            "height": 101
+          }
+        },
+        {
+          "id": 35,
+          "role": "button",
+          "name": "Accounts",
+          "rect": {
+            "x": 69,
+            "y": 877,
+            "width": 46,
+            "height": 46
+          }
+        },
+        {
+          "id": 36,
+          "role": "group",
+          "name": "Accounts",
+          "rect": {
+            "x": 69,
+            "y": 877,
+            "width": 46,
+            "height": 46
+          }
+        },
+        {
+          "id": 37,
+          "role": "button",
+          "name": "Manage - Updating Code...",
+          "rect": {
+            "x": 69,
+            "y": 932,
+            "width": 46,
+            "height": 46
+          }
+        },
+        {
+          "id": 38,
+          "role": "group",
+          "name": "Manage - Updating Code...",
+          "rect": {
+            "x": 69,
+            "y": 932,
+            "width": 46,
+            "height": 46
+          }
+        },
+        {
+          "id": 39,
+          "role": "group",
+          "name": "Manage - Updating Code...",
+          "rect": {
+            "x": 69,
+            "y": 932,
+            "width": 46,
+            "height": 46
+          }
+        },
+        {
+          "id": 40,
+          "role": "text",
+          "name": "Explorer",
+          "rect": {
+            "x": 136,
+            "y": 44,
+            "width": 232,
+            "height": 41
+          }
+        },
+        {
+          "id": 41,
+          "role": "toolbar",
+          "name": "Explorer actions",
+          "rect": {
+            "x": 373,
+            "y": 44,
+            "width": 116,
+            "height": 41
+          }
+        },
+        {
+          "id": 42,
+          "role": "button",
+          "name": "Views and More Actions...",
+          "rect": {
+            "x": 461,
+            "y": 51,
+            "width": 28,
+            "height": 28
+          }
+        },
+        {
+          "id": 43,
+          "role": "button",
+          "name": "Explorer Section: <worktree>",
+          "rect": {
+            "x": 126,
+            "y": 84,
+            "width": 362,
+            "height": 36
+          }
+        },
+        {
+          "id": 44,
+          "role": "tree",
+          "name": "Files Explorer",
+          "rect": {
+            "x": 121,
+            "y": 119,
+            "width": 372,
+            "height": 787
+          }
+        },
+        {
+          "id": 45,
+          "role": "treeitem",
+          "name": ".claude",
+          "rect": {
+            "x": 126,
+            "y": 119,
+            "width": 362,
+            "height": 29
+          },
+          "automationId": "list_id_3_0"
+        },
+        {
+          "id": 46,
+          "role": "treeitem",
+          "name": ".github",
+          "rect": {
+            "x": 126,
+            "y": 147,
+            "width": 362,
+            "height": 28
+          },
+          "automationId": "list_id_3_1"
+        },
+        {
+          "id": 47,
+          "role": "treeitem",
+          "name": ".husky",
+          "rect": {
+            "x": 126,
+            "y": 174,
+            "width": 362,
+            "height": 29
+          },
+          "automationId": "list_id_3_2"
+        },
+        {
+          "id": 48,
+          "role": "treeitem",
+          "name": "app",
+          "rect": {
+            "x": 126,
+            "y": 202,
+            "width": 362,
+            "height": 28
+          },
+          "automationId": "list_id_3_3"
+        },
+        {
+          "id": 49,
+          "role": "treeitem",
+          "name": "docs",
+          "rect": {
+            "x": 126,
+            "y": 229,
+            "width": 362,
+            "height": 29
+          },
+          "automationId": "list_id_3_4"
+        },
+        {
+          "id": 50,
+          "role": "treeitem",
+          "name": "node_modules",
+          "rect": {
+            "x": 126,
+            "y": 257,
+            "width": 362,
+            "height": 28
+          },
+          "automationId": "list_id_3_5"
+        },
+        {
+          "id": 51,
+          "role": "treeitem",
+          "name": "spikes",
+          "rect": {
+            "x": 126,
+            "y": 284,
+            "width": 362,
+            "height": 29
+          },
+          "automationId": "list_id_3_6"
+        },
+        {
+          "id": 52,
+          "role": "treeitem",
+          "name": ".env.example",
+          "rect": {
+            "x": 126,
+            "y": 312,
+            "width": 362,
+            "height": 28
+          },
+          "automationId": "list_id_3_7"
+        },
+        {
+          "id": 53,
+          "role": "treeitem",
+          "name": ".gitattributes",
+          "rect": {
+            "x": 126,
+            "y": 339,
+            "width": 362,
+            "height": 29
+          },
+          "automationId": "list_id_3_8"
+        },
+        {
+          "id": 54,
+          "role": "treeitem",
+          "name": ".gitignore",
+          "rect": {
+            "x": 126,
+            "y": 367,
+            "width": 362,
+            "height": 28
+          },
+          "automationId": "list_id_3_9"
+        },
+        {
+          "id": 55,
+          "role": "treeitem",
+          "name": "CLAUDE.md",
+          "rect": {
+            "x": 126,
+            "y": 394,
+            "width": 362,
+            "height": 29
+          },
+          "automationId": "list_id_3_10"
+        },
+        {
+          "id": 56,
+          "role": "treeitem",
+          "name": "commitlint.config.mjs",
+          "rect": {
+            "x": 126,
+            "y": 422,
+            "width": 362,
+            "height": 28
+          },
+          "automationId": "list_id_3_11"
+        },
+        {
+          "id": 57,
+          "role": "treeitem",
+          "name": "CONTRIBUTING.md",
+          "rect": {
+            "x": 126,
+            "y": 449,
+            "width": 362,
+            "height": 29
+          },
+          "automationId": "list_id_3_12"
+        },
+        {
+          "id": 58,
+          "role": "treeitem",
+          "name": "LICENSE",
+          "rect": {
+            "x": 126,
+            "y": 477,
+            "width": 362,
+            "height": 28
+          },
+          "automationId": "list_id_3_13"
+        },
+        {
+          "id": 59,
+          "role": "treeitem",
+          "name": "package-lock.json",
+          "rect": {
+            "x": 126,
+            "y": 504,
+            "width": 362,
+            "height": 29
+          },
+          "automationId": "list_id_3_14"
+        },
+        {
+          "id": 60,
+          "role": "treeitem",
+          "name": "package.json",
+          "rect": {
+            "x": 126,
+            "y": 532,
+            "width": 362,
+            "height": 28
+          },
+          "automationId": "list_id_3_15"
+        },
+        {
+          "id": 61,
+          "role": "treeitem",
+          "name": "README.md",
+          "rect": {
+            "x": 126,
+            "y": 559,
+            "width": 362,
+            "height": 29
+          },
+          "automationId": "list_id_3_16"
+        },
+        {
+          "id": 62,
+          "role": "button",
+          "name": "Outline Section",
+          "rect": {
+            "x": 126,
+            "y": 905,
+            "width": 362,
+            "height": 36
+          }
+        },
+        {
+          "id": 63,
+          "role": "text",
+          "name": "Outline",
+          "rect": {
+            "x": 156,
+            "y": 905,
+            "width": 51,
+            "height": 36
+          }
+        },
+        {
+          "id": 64,
+          "role": "button",
+          "name": "Timeline Section",
+          "rect": {
+            "x": 126,
+            "y": 940,
+            "width": 362,
+            "height": 36
+          }
+        },
+        {
+          "id": 65,
+          "role": "text",
+          "name": "Timeline",
+          "rect": {
+            "x": 156,
+            "y": 940,
+            "width": 59,
+            "height": 36
+          }
+        },
+        {
+          "id": 66,
+          "role": "tab",
+          "name": "README.md",
+          "rect": {
+            "x": 501,
+            "y": 44,
+            "width": 166,
+            "height": 41
+          }
+        },
+        {
+          "id": 67,
+          "role": "toolbar",
+          "name": "Tab actions",
+          "rect": {
+            "x": 630,
+            "y": 45,
+            "width": 31,
+            "height": 39
+          }
+        },
+        {
+          "id": 68,
+          "role": "button",
+          "name": "Close (Ctrl+F4)",
+          "rect": {
+            "x": 633,
+            "y": 52,
+            "width": 26,
+            "height": 26
+          }
+        },
+        {
+          "id": 69,
+          "role": "toolbar",
+          "name": "Editor actions",
+          "rect": {
+            "x": 1359,
+            "y": 44,
+            "width": 125,
+            "height": 41
+          }
+        },
+        {
+          "id": 70,
+          "role": "button",
+          "name": "Open Preview to the Side (Ctrl+K V) [Alt] Open Preview",
+          "rect": {
+            "x": 1359,
+            "y": 51,
+            "width": 28,
+            "height": 28
+          }
+        },
+        {
+          "id": 71,
+          "role": "button",
+          "name": "Open as Preview",
+          "rect": {
+            "x": 1391,
+            "y": 51,
+            "width": 28,
+            "height": 28
+          }
+        },
+        {
+          "id": 72,
+          "role": "button",
+          "name": "Split Editor Right (Ctrl+\\) [Alt] Split Editor Down",
+          "rect": {
+            "x": 1424,
+            "y": 51,
+            "width": 28,
+            "height": 28
+          }
+        },
+        {
+          "id": 73,
+          "role": "button",
+          "name": "More Actions...",
+          "rect": {
+            "x": 1456,
+            "y": 51,
+            "width": 28,
+            "height": 28
+          }
+        },
+        {
+          "id": 74,
+          "role": "listitem",
+          "name": "README.md",
+          "rect": {
+            "x": 501,
+            "y": 86,
+            "width": 158,
+            "height": 28
+          }
+        },
+        {
+          "id": 75,
+          "role": "listitem",
+          "name": "# kutty-jarvis",
+          "rect": {
+            "x": 658,
+            "y": 86,
+            "width": 128,
+            "height": 28
+          }
+        },
+        {
+          "id": 76,
+          "role": "group",
+          "name": "README.md",
+          "rect": {
+            "x": 501,
+            "y": 113,
+            "width": 988,
+            "height": 869
+          }
+        },
+        {
+          "id": 77,
+          "role": "edit",
+          "name": "The editor is not accessible at this time. To enable screen reader optimized mode, use Shift+Alt+F1",
+          "rect": {
+            "x": 586,
+            "y": 113,
+            "width": 789,
+            "height": 25
+          }
+        },
+        {
+          "id": 78,
+          "role": "tablist",
+          "name": "Active View Switcher",
+          "rect": {
+            "x": 1498,
+            "y": 44,
+            "width": 59,
+            "height": 41
+          }
+        },
+        {
+          "id": 79,
+          "role": "tab",
+          "name": "Chat (Ctrl+Alt+I)",
+          "rect": {
+            "x": 1498,
+            "y": 44,
+            "width": 59,
+            "height": 41
+          }
+        },
+        {
+          "id": 80,
+          "role": "toolbar",
+          "name": "Chat actions",
+          "rect": {
+            "x": 1648,
+            "y": 44,
+            "width": 146,
+            "height": 41
+          }
+        },
+        {
+          "id": 81,
+          "role": "button",
+          "name": "New Chat (Ctrl+N)",
+          "rect": {
+            "x": 1668,
+            "y": 51,
+            "width": 28,
+            "height": 28
+          }
+        },
+        {
+          "id": 82,
+          "role": "button",
+          "name": "New Chat",
+          "rect": {
+            "x": 1692,
+            "y": 51,
+            "width": 21,
+            "height": 28
+          }
+        },
+        {
+          "id": 83,
+          "role": "button",
+          "name": "Open Customizations",
+          "rect": {
+            "x": 1717,
+            "y": 51,
+            "width": 29,
+            "height": 28
+          }
+        },
+        {
+          "id": 84,
+          "role": "button",
+          "name": "Views and More Actions...",
+          "rect": {
+            "x": 1750,
+            "y": 51,
+            "width": 28,
+            "height": 28
+          }
+        },
+        {
+          "id": 85,
+          "role": "button",
+          "name": "Maximize Secondary Side Bar",
+          "rect": {
+            "x": 1794,
+            "y": 51,
+            "width": 28,
+            "height": 28
+          }
+        },
+        {
+          "id": 86,
+          "role": "button",
+          "name": "Hide Secondary Side Bar (Ctrl+Alt+B)",
+          "rect": {
+            "x": 1826,
+            "y": 51,
+            "width": 28,
+            "height": 28
+          }
+        },
+        {
+          "id": 87,
+          "role": "text",
+          "name": "Build with Agent",
+          "rect": {
+            "x": 1615,
+            "y": 462,
+            "width": 124,
+            "height": 23
+          }
+        },
+        {
+          "id": 88,
+          "role": "text",
+          "name": "AI responses may be inaccurate",
+          "rect": {
+            "x": 1572,
+            "y": 495,
+            "width": 210,
+            "height": 21
+          }
+        },
+        {
+          "id": 89,
+          "role": "group",
+          "name": "Suggested context, file, README.md file:///c%3A/Users/<user>/repos/portfolios/jarvis/.claude/worktrees/<worktree>",
+          "rect": {
+            "x": 1519,
+            "y": 822,
+            "width": 129,
+            "height": 25
+          }
+        },
+        {
+          "id": 90,
+          "role": "button",
+          "name": "Add file:README.md to context",
+          "rect": {
+            "x": 1520,
+            "y": 820,
+            "width": 23,
+            "height": 29
+          }
+        },
+        {
+          "id": 91,
+          "role": "group",
+          "name": "Enable current file context README.md",
+          "rect": {
+            "x": 1543,
+            "y": 823,
+            "width": 99,
+            "height": 23
+          }
+        },
+        {
+          "id": 92,
+          "role": "text",
+          "name": "README.md",
+          "rect": {
+            "x": 1568,
+            "y": 825,
+            "width": 74,
+            "height": 19
+          }
+        },
+        {
+          "id": 93,
+          "role": "edit",
+          "name": "The editor is not accessible at this time. To enable screen reader optimized mode, use Shift+Alt+F1",
+          "rect": {
+            "x": 1524,
+            "y": 861,
+            "width": 305,
+            "height": 26
+          }
+        },
+        {
+          "id": 94,
+          "role": "button",
+          "name": "Add Context... (Ctrl+/)",
+          "rect": {
+            "x": 1519,
+            "y": 906,
+            "width": 28,
+            "height": 29
+          }
+        },
+        {
+          "id": 95,
+          "role": "button",
+          "name": "Agent",
+          "rect": {
+            "x": 1552,
+            "y": 906,
+            "width": 75,
+            "height": 29
+          }
+        },
+        {
+          "id": 96,
+          "role": "group",
+          "name": "Models, sign in to use Copilot",
+          "rect": {
+            "x": 1631,
+            "y": 906,
+            "width": 60,
+            "height": 29
+          }
+        },
+        {
+          "id": 97,
+          "role": "button",
+          "name": "Models, sign in to use Copilot",
+          "rect": {
+            "x": 1631,
+            "y": 906,
+            "width": 60,
+            "height": 29
+          }
+        },
+        {
+          "id": 98,
+          "role": "button",
+          "name": "Configure Tools...",
+          "rect": {
+            "x": 1695,
+            "y": 906,
+            "width": 29,
+            "height": 29
+          }
+        },
+        {
+          "id": 99,
+          "role": "button",
+          "name": "Dictate (Speech to Text) (Ctrl+I)",
+          "rect": {
+            "x": 1774,
+            "y": 906,
+            "width": 28,
+            "height": 29
+          }
+        },
+        {
+          "id": 100,
+          "role": "button",
+          "name": "Send [Alt] Send to New Chat (Ctrl+Shift+Enter)",
+          "rect": {
+            "x": 1806,
+            "y": 906,
+            "width": 29,
+            "height": 29
+          }
+        },
+        {
+          "id": 101,
+          "role": "button",
+          "name": "Local",
+          "rect": {
+            "x": 1516,
+            "y": 947,
+            "width": 69,
+            "height": 29
+          }
+        },
+        {
+          "id": 102,
+          "role": "button",
+          "name": "Permission picker, Default permissions",
+          "rect": {
+            "x": 1587,
+            "y": 947,
+            "width": 158,
+            "height": 29
+          }
+        },
+        {
+          "id": 103,
+          "role": "text",
+          "name": "Default permissions",
+          "rect": {
+            "x": 1617,
+            "y": 952,
+            "width": 120,
+            "height": 19
+          }
+        },
+        {
+          "id": 104,
+          "role": "group",
+          "name": "remote",
+          "rect": {
+            "x": 67,
+            "y": 987,
+            "width": 38,
+            "height": 31
+          },
+          "automationId": "status.host"
+        },
+        {
+          "id": 105,
+          "role": "button",
+          "name": "remote",
+          "rect": {
+            "x": 72,
+            "y": 987,
+            "width": 33,
+            "height": 31
+          }
+        },
+        {
+          "id": 106,
+          "role": "group",
+          "name": "<worktree> (Git) - feat/pointing-overlay-uia*, Checkout Branch/Tag...",
+          "rect": {
+            "x": 105,
+            "y": 987,
+            "width": 211,
+            "height": 31
+          },
+          "automationId": "status.scm.0"
+        },
+        {
+          "id": 107,
+          "role": "button",
+          "name": "<worktree> (Git) - feat/pointing-overlay-uia*, Checkout Branch/Tag...",
+          "rect": {
+            "x": 111,
+            "y": 987,
+            "width": 205,
+            "height": 31
+          }
+        },
+        {
+          "id": 108,
+          "role": "group",
+          "name": "<worktree> (Git) - Publish Branch",
+          "rect": {
+            "x": 315,
+            "y": 987,
+            "width": 35,
+            "height": 31
+          },
+          "automationId": "status.scm.1"
+        },
+        {
+          "id": 109,
+          "role": "button",
+          "name": "<worktree> (Git) - Publish Branch",
+          "rect": {
+            "x": 315,
+            "y": 987,
+            "width": 28,
+            "height": 31
+          }
+        },
+        {
+          "id": 110,
+          "role": "group",
+          "name": "No Problems",
+          "rect": {
+            "x": 349,
+            "y": 987,
+            "width": 89,
+            "height": 31
+          },
+          "automationId": "status.problems"
+        },
+        {
+          "id": 111,
+          "role": "button",
+          "name": "No Problems",
+          "rect": {
+            "x": 352,
+            "y": 987,
+            "width": 82,
+            "height": 31
+          }
+        },
+        {
+          "id": 112,
+          "role": "group",
+          "name": "Notifications",
+          "rect": {
+            "x": 1820,
+            "y": 987,
+            "width": 38,
+            "height": 31
+          },
+          "automationId": "status.notifications"
+        },
+        {
+          "id": 113,
+          "role": "button",
+          "name": "Notifications",
+          "rect": {
+            "x": 1820,
+            "y": 987,
+            "width": 35,
+            "height": 31
+          }
+        },
+        {
+          "id": 114,
+          "role": "group",
+          "name": "Copilot status",
+          "rect": {
+            "x": 1780,
+            "y": 987,
+            "width": 40,
+            "height": 31
+          },
+          "automationId": "chat.statusBarEntry"
+        },
+        {
+          "id": 115,
+          "role": "button",
+          "name": "Copilot status",
+          "rect": {
+            "x": 1783,
+            "y": 987,
+            "width": 34,
+            "height": 31
+          }
+        },
+        {
+          "id": 116,
+          "role": "group",
+          "name": "Markdown",
+          "rect": {
+            "x": 1695,
+            "y": 987,
+            "width": 85,
+            "height": 31
+          },
+          "automationId": "status.editor.mode"
+        },
+        {
+          "id": 117,
+          "role": "button",
+          "name": "Markdown",
+          "rect": {
+            "x": 1695,
+            "y": 987,
+            "width": 79,
+            "height": 31
+          }
+        },
+        {
+          "id": 118,
+          "role": "group",
+          "name": "Editor Language Status: Markdown link validation disabled, next: $(copilot) No inline suggestion available, Inline suggestions",
+          "rect": {
+            "x": 1661,
+            "y": 987,
+            "width": 35,
+            "height": 31
+          },
+          "automationId": "status.languageStatus"
+        },
+        {
+          "id": 119,
+          "role": "button",
+          "name": "Editor Language Status: Markdown link validation disabled, next: $(copilot) No inline suggestion available, Inline suggestions",
+          "rect": {
+            "x": 1668,
+            "y": 987,
+            "width": 28,
+            "height": 31
+          }
+        },
+        {
+          "id": 120,
+          "role": "group",
+          "name": "LF",
+          "rect": {
+            "x": 1627,
+            "y": 987,
+            "width": 35,
+            "height": 31
+          },
+          "automationId": "status.editor.eol"
+        },
+        {
+          "id": 121,
+          "role": "button",
+          "name": "LF",
+          "rect": {
+            "x": 1631,
+            "y": 987,
+            "width": 28,
+            "height": 31
+          }
+        },
+        {
+          "id": 122,
+          "role": "group",
+          "name": "UTF-8",
+          "rect": {
+            "x": 1567,
+            "y": 987,
+            "width": 61,
+            "height": 31
+          },
+          "automationId": "status.editor.encoding"
+        },
+        {
+          "id": 123,
+          "role": "button",
+          "name": "UTF-8",
+          "rect": {
+            "x": 1571,
+            "y": 987,
+            "width": 53,
+            "height": 31
+          }
+        },
+        {
+          "id": 124,
+          "role": "group",
+          "name": "Spaces: 4",
+          "rect": {
+            "x": 1486,
+            "y": 987,
+            "width": 82,
+            "height": 31
+          },
+          "automationId": "status.editor.indentation"
+        },
+        {
+          "id": 125,
+          "role": "button",
+          "name": "Spaces: 4",
+          "rect": {
+            "x": 1490,
+            "y": 987,
+            "width": 75,
+            "height": 31
+          }
+        },
+        {
+          "id": 126,
+          "role": "group",
+          "name": "Ln 1, Col 1",
+          "rect": {
+            "x": 1397,
+            "y": 987,
+            "width": 90,
+            "height": 31
+          },
+          "automationId": "status.editor.selection"
+        },
+        {
+          "id": 127,
+          "role": "button",
+          "name": "Ln 1, Col 1",
+          "rect": {
+            "x": 1401,
+            "y": 987,
+            "width": 83,
+            "height": 31
+          }
+        }
+      ]
+    },
+    {
+      "label": "edge-dense",
+      "app": "Microsoft Edge 158 (temporary profile, HTML spec index page)",
+      "windowTitle": "HTML Standard - Microsoft Edge",
+      "windowRect": {
+        "x": 13,
+        "y": 13,
+        "width": 1313,
+        "height": 995
+      },
+      "runs": [
+        {
+          "elapsedMs": 158,
+          "elements": 54,
+          "visited": 142,
+          "partial": false
+        },
+        {
+          "elapsedMs": 136,
+          "elements": 54,
+          "visited": 142,
+          "partial": false
+        },
+        {
+          "elapsedMs": 151,
+          "elements": 54,
+          "visited": 142,
+          "partial": false
+        }
+      ],
+      "candidates": 54,
+      "capped": false,
+      "partial": false,
+      "stopReason": null,
+      "prunedOffscreen": 48,
+      "pointing": [],
+      "elements": [
+        {
+          "id": 1,
+          "role": "pane",
+          "name": "HTML Standard - Microsoft Edge",
+          "rect": {
+            "x": 23,
+            "y": 13,
+            "width": 1295,
+            "height": 987
+          }
+        },
+        {
+          "id": 2,
+          "role": "button",
+          "name": "Minimize",
+          "rect": {
+            "x": 1145,
+            "y": 14,
+            "width": 58,
+            "height": 49
+          },
+          "automationId": "view_2"
+        },
+        {
+          "id": 3,
+          "role": "button",
+          "name": "Maximize",
+          "rect": {
+            "x": 1203,
+            "y": 14,
+            "width": 58,
+            "height": 49
+          },
+          "automationId": "view_3"
+        },
+        {
+          "id": 4,
+          "role": "button",
+          "name": "Close",
+          "rect": {
+            "x": 1260,
+            "y": 14,
+            "width": 58,
+            "height": 49
+          },
+          "automationId": "view_7"
+        },
+        {
+          "id": 5,
+          "role": "toolbar",
+          "name": "App bar",
+          "rect": {
+            "x": 23,
+            "y": 63,
+            "width": 1295,
+            "height": 50
+          },
+          "automationId": "view_1000"
+        },
+        {
+          "id": 6,
+          "role": "button",
+          "name": "Back",
+          "rect": {
+            "x": 28,
+            "y": 68,
+            "width": 40,
+            "height": 40
+          },
+          "automationId": "view_1001"
+        },
+        {
+          "id": 7,
+          "role": "button",
+          "name": "Refresh",
+          "rect": {
+            "x": 73,
+            "y": 68,
+            "width": 40,
+            "height": 40
+          },
+          "automationId": "view_1003"
+        },
+        {
+          "id": 8,
+          "role": "button",
+          "name": "Home",
+          "rect": {
+            "x": 118,
+            "y": 68,
+            "width": 40,
+            "height": 40
+          },
+          "automationId": "view_1004"
+        },
+        {
+          "id": 9,
+          "role": "button",
+          "name": "View site information",
+          "rect": {
+            "x": 168,
+            "y": 73,
+            "width": 30,
+            "height": 30
+          },
+          "automationId": "view_1015"
+        },
+        {
+          "id": 10,
+          "role": "edit",
+          "name": "Address and search bar",
+          "rect": {
+            "x": 198,
+            "y": 73,
+            "width": 782,
+            "height": 30
+          },
+          "automationId": "view_1017"
+        },
+        {
+          "id": 11,
+          "role": "button",
+          "name": "Enter Reading mode (F9)",
+          "rect": {
+            "x": 984,
+            "y": 73,
+            "width": 30,
+            "height": 30
+          }
+        },
+        {
+          "id": 12,
+          "role": "button",
+          "name": "Add this page to favorites (Ctrl+D)",
+          "rect": {
+            "x": 1019,
+            "y": 73,
+            "width": 30,
+            "height": 30
+          },
+          "automationId": "view_1006"
+        },
+        {
+          "id": 13,
+          "role": "button",
+          "name": "Favorites",
+          "rect": {
+            "x": 1059,
+            "y": 68,
+            "width": 40,
+            "height": 40
+          },
+          "automationId": "view_1007"
+        },
+        {
+          "id": 14,
+          "role": "button",
+          "name": "Personal Profile",
+          "rect": {
+            "x": 1104,
+            "y": 68,
+            "width": 40,
+            "height": 40
+          },
+          "automationId": "view_1009"
+        },
+        {
+          "id": 15,
+          "role": "button",
+          "name": "Settings and more (Alt+F)",
+          "rect": {
+            "x": 1149,
+            "y": 68,
+            "width": 40,
+            "height": 40
+          },
+          "automationId": "view_1011"
+        },
+        {
+          "id": 16,
+          "role": "button",
+          "name": "Chat",
+          "rect": {
+            "x": 1194,
+            "y": 68,
+            "width": 89,
+            "height": 40
+          },
+          "automationId": "view_1079"
+        },
+        {
+          "id": 17,
+          "role": "button",
+          "name": "Copilot menu",
+          "rect": {
+            "x": 1283,
+            "y": 68,
+            "width": 30,
+            "height": 40
+          },
+          "automationId": "view_1096"
+        },
+        {
+          "id": 18,
+          "role": "document",
+          "name": "HTML Standard",
+          "rect": {
+            "x": 28,
+            "y": 113,
+            "width": 1285,
+            "height": 882
+          },
+          "automationId": "RootWebArea"
+        },
+        {
+          "id": 19,
+          "role": "link",
+          "name": "WHATWG",
+          "rect": {
+            "x": 1149,
+            "y": 133,
+            "width": 125,
+            "height": 125
+          }
+        },
+        {
+          "id": 20,
+          "role": "text",
+          "name": "HTML",
+          "rect": {
+            "x": 78,
+            "y": 133,
+            "width": 891,
+            "height": 99
+          }
+        },
+        {
+          "id": 21,
+          "role": "text",
+          "name": "Living Standard — Last Updated",
+          "rect": {
+            "x": 78,
+            "y": 232,
+            "width": 502,
+            "height": 40
+          }
+        },
+        {
+          "id": 22,
+          "role": "text",
+          "name": "26 November 2026",
+          "rect": {
+            "x": 579,
+            "y": 232,
+            "width": 285,
+            "height": 40
+          }
+        },
+        {
+          "id": 23,
+          "role": "link",
+          "name": "← 17 IANA considerations",
+          "rect": {
+            "x": 78,
+            "y": 303,
+            "width": 234,
+            "height": 22
+          }
+        },
+        {
+          "id": 24,
+          "role": "text",
+          "name": "—",
+          "rect": {
+            "x": 311,
+            "y": 303,
+            "width": 32,
+            "height": 22
+          }
+        },
+        {
+          "id": 25,
+          "role": "link",
+          "name": "Table of Contents",
+          "rect": {
+            "x": 342,
+            "y": 303,
+            "width": 156,
+            "height": 22
+          }
+        },
+        {
+          "id": 26,
+          "role": "text",
+          "name": "—",
+          "rect": {
+            "x": 497,
+            "y": 303,
+            "width": 33,
+            "height": 22
+          }
+        },
+        {
+          "id": 27,
+          "role": "link",
+          "name": "References →",
+          "rect": {
+            "x": 529,
+            "y": 303,
+            "width": 128,
+            "height": 22
+          }
+        },
+        {
+          "id": 28,
+          "role": "listitem",
+          "name": "IndexElementsElement content categoriesAttributesElement interfacesAll interfacesEventsHTTP headersMIME types",
+          "rect": {
+            "x": 128,
+            "y": 364,
+            "width": 966,
+            "height": 353
+          },
+          "automationId": "toc-index"
+        },
+        {
+          "id": 29,
+          "role": "link",
+          "name": "Index",
+          "rect": {
+            "x": 128,
+            "y": 367,
+            "width": 49,
+            "height": 22
+          }
+        },
+        {
+          "id": 30,
+          "role": "listitem",
+          "name": "Elements",
+          "rect": {
+            "x": 178,
+            "y": 401,
+            "width": 916,
+            "height": 29
+          }
+        },
+        {
+          "id": 31,
+          "role": "link",
+          "name": "Elements",
+          "rect": {
+            "x": 178,
+            "y": 404,
+            "width": 84,
+            "height": 22
+          }
+        },
+        {
+          "id": 32,
+          "role": "listitem",
+          "name": "Element content categories",
+          "rect": {
+            "x": 178,
+            "y": 442,
+            "width": 916,
+            "height": 29
+          }
+        },
+        {
+          "id": 33,
+          "role": "link",
+          "name": "Element content categories",
+          "rect": {
+            "x": 178,
+            "y": 445,
+            "width": 243,
+            "height": 22
+          }
+        },
+        {
+          "id": 34,
+          "role": "listitem",
+          "name": "Attributes",
+          "rect": {
+            "x": 178,
+            "y": 483,
+            "width": 916,
+            "height": 29
+          }
+        },
+        {
+          "id": 35,
+          "role": "link",
+          "name": "Attributes",
+          "rect": {
+            "x": 178,
+            "y": 486,
+            "width": 85,
+            "height": 22
+          }
+        },
+        {
+          "id": 36,
+          "role": "listitem",
+          "name": "Element interfaces",
+          "rect": {
+            "x": 178,
+            "y": 524,
+            "width": 916,
+            "height": 29
+          }
+        },
+        {
+          "id": 37,
+          "role": "link",
+          "name": "Element interfaces",
+          "rect": {
+            "x": 178,
+            "y": 527,
+            "width": 166,
+            "height": 22
+          }
+        },
+        {
+          "id": 38,
+          "role": "listitem",
+          "name": "All interfaces",
+          "rect": {
+            "x": 178,
+            "y": 565,
+            "width": 916,
+            "height": 29
+          }
+        },
+        {
+          "id": 39,
+          "role": "link",
+          "name": "All interfaces",
+          "rect": {
+            "x": 178,
+            "y": 568,
+            "width": 115,
+            "height": 22
+          }
+        },
+        {
+          "id": 40,
+          "role": "listitem",
+          "name": "Events",
+          "rect": {
+            "x": 178,
+            "y": 606,
+            "width": 916,
+            "height": 29
+          }
+        },
+        {
+          "id": 41,
+          "role": "link",
+          "name": "Events",
+          "rect": {
+            "x": 178,
+            "y": 609,
+            "width": 62,
+            "height": 22
+          }
+        },
+        {
+          "id": 42,
+          "role": "listitem",
+          "name": "HTTP headers",
+          "rect": {
+            "x": 178,
+            "y": 647,
+            "width": 916,
+            "height": 29
+          }
+        },
+        {
+          "id": 43,
+          "role": "link",
+          "name": "HTTP headers",
+          "rect": {
+            "x": 178,
+            "y": 650,
+            "width": 130,
+            "height": 22
+          }
+        },
+        {
+          "id": 44,
+          "role": "listitem",
+          "name": "MIME types",
+          "rect": {
+            "x": 178,
+            "y": 688,
+            "width": 916,
+            "height": 29
+          }
+        },
+        {
+          "id": 45,
+          "role": "link",
+          "name": "MIME types",
+          "rect": {
+            "x": 178,
+            "y": 691,
+            "width": 106,
+            "height": 22
+          }
+        },
+        {
+          "id": 46,
+          "role": "text",
+          "name": "Index §",
+          "rect": {
+            "x": 78,
+            "y": 885,
+            "width": 1016,
+            "height": 40
+          },
+          "automationId": "index"
+        },
+        {
+          "id": 47,
+          "role": "link",
+          "name": "§",
+          "rect": {
+            "x": 19,
+            "y": 885,
+            "width": 48,
+            "height": 47
+          }
+        },
+        {
+          "id": 48,
+          "role": "text",
+          "name": "The following sections only cover conforming elements and features.",
+          "rect": {
+            "x": 78,
+            "y": 956,
+            "width": 607,
+            "height": 22
+          }
+        },
+        {
+          "id": 49,
+          "role": "tablist",
+          "name": "Tab bar",
+          "rect": {
+            "x": 25,
+            "y": 13,
+            "width": 1120,
+            "height": 52
+          }
+        },
+        {
+          "id": 50,
+          "role": "button",
+          "name": "Search tabs",
+          "rect": {
+            "x": 28,
+            "y": 13,
+            "width": 40,
+            "height": 45
+          },
+          "automationId": "view_1052"
+        },
+        {
+          "id": 51,
+          "role": "tab",
+          "name": "HTML Standard - Memory usage - 129 MB",
+          "rect": {
+            "x": 63,
+            "y": 13,
+            "width": 320,
+            "height": 52
+          },
+          "automationId": "view_24"
+        },
+        {
+          "id": 52,
+          "role": "button",
+          "name": "Close tab",
+          "rect": {
+            "x": 343,
+            "y": 28,
+            "width": 20,
+            "height": 20
+          },
+          "automationId": "view_27"
+        },
+        {
+          "id": 53,
+          "role": "button",
+          "name": "New Tab",
+          "rect": {
+            "x": 378,
+            "y": 13,
+            "width": 40,
+            "height": 52
+          },
+          "automationId": "view_28"
+        },
+        {
+          "id": 54,
+          "role": "window",
+          "name": "Sync your profile",
+          "rect": {
+            "x": 358,
+            "y": 109,
+            "width": 625,
+            "height": 420
+          }
+        }
+      ]
+    }
+  ]
+}
