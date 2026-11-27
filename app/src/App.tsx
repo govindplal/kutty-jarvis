@@ -6,6 +6,7 @@ import { PushToTalkStatus } from "./components/PushToTalkStatus";
 import { ScreenCaptureStatus } from "./components/ScreenCaptureStatus";
 import { RecordingStatus } from "./components/RecordingStatus";
 import { PointingDebugPanel } from "./components/PointingDebugPanel";
+import { AssistantStatus } from "./components/AssistantStatus";
 
 function App() {
   const [greetMsg, setGreetMsg] = useState("");
@@ -22,6 +23,7 @@ function App() {
       <PushToTalkStatus />
       <ScreenCaptureStatus />
       <RecordingStatus />
+      <AssistantStatus />
       <PointingDebugPanel />
 
       <div className="row">
