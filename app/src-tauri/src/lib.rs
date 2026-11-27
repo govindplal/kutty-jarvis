@@ -3,6 +3,9 @@ mod capture;
 mod hotkey;
 mod push_to_talk;
 mod tray;
+/// On-screen UI elements; public so the model loop can call
+/// `uia::list_elements` and `uia::render_for_prompt`.
+pub mod uia;
 
 use tauri::{Manager, WindowEvent};
 
