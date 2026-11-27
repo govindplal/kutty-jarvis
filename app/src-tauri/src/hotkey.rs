@@ -12,6 +12,7 @@ use tauri_plugin_global_shortcut::{
     Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutEvent, ShortcutState,
 };
 
+use crate::assistant;
 use crate::audio::{self, ActiveRecorder, LatestRecording, Recorder};
 use crate::capture::{self, LatestScreenshot};
 use crate::push_to_talk::{PushToTalk, PushToTalkState};
@@ -147,7 +148,8 @@ pub fn register(app: &App) -> tauri::Result<()> {
                         emit(app, PUSH_TO_TALK_EVENT, next);
                         match next {
                             PushToTalkState::Listening => {
-                                capture_in_background(app.clone());
+                                let screenshots = assistant::runtime::begin_turn(app);
+                                capture_in_background(app.clone(), screenshots);
                                 start_recording(app);
                             }
                             PushToTalkState::Idle => finish_recording_in_background(app.clone()),
@@ -215,6 +217,8 @@ fn finish_recording_in_background(app: AppHandle) {
     };
     std::thread::spawn(move || match recorder.finish() {
         Ok(recording) => {
+            let question_wav = recording.wav.clone();
+            let has_audio = recording.first_sample_ms.is_some();
             let payload = RecordingFinished {
                 duration_ms: recording.duration_ms,
                 wav_bytes: recording.wav.len(),
@@ -230,15 +234,18 @@ fn finish_recording_in_background(app: AppHandle) {
                     .unwrap_or_else(|poisoned| poisoned.into_inner()) = Some(recording);
             }
             emit(&app, RECORDING_FINISHED_EVENT, payload);
+            assistant::runtime::answer(&app, question_wav, has_audio);
         }
         Err(message) => emit(&app, RECORDING_FAILED_EVENT, message),
     });
 }
 
 /// Captures the screen off the hotkey thread. Only ever called on key press.
-fn capture_in_background(app: AppHandle) {
+/// The frame also goes to the question being collected for the model.
+fn capture_in_background(app: AppHandle, for_question: assistant::runtime::ScreenshotSender) {
     std::thread::spawn(move || match capture::capture_primary() {
         Ok(screenshot) => {
+            let _ = for_question.send(Some(screenshot.png.clone()));
             let payload = ScreenCaptured {
                 width: screenshot.width,
                 height: screenshot.height,
