@@ -13,7 +13,7 @@ use std::time::{Duration, Instant};
 use serde::Serialize;
 
 use crate::models::{Assistant, Question, SpeechToText};
-use crate::uia::{ElementList, Rect, render_for_prompt};
+use crate::uia::{ElementList, Rect};
 
 /// Which step failed, shown to the user and sent to the frontend.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
@@ -88,7 +88,7 @@ pub fn run(
         elements: input
             .elements
             .as_ref()
-            .map(render_for_prompt)
+            .map(prompt::render_elements)
             .unwrap_or_default(),
     };
     let started = Instant::now();
@@ -232,6 +232,9 @@ mod tests {
             "{}",
             seen.elements
         );
+        // Pixel rectangles stay local: the model only gets ids and names.
+        assert!(!seen.elements.contains("100"), "{}", seen.elements);
+        assert!(!seen.elements.contains('('), "{}", seen.elements);
     }
 
     #[test]

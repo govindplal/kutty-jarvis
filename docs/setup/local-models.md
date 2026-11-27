@@ -32,7 +32,7 @@ All optional. The app reads them at start-up and on each server start.
 | `KJ_MODELS_DIR` | Folder holding the four GGUF files; replaces `models\`. |
 | `KJ_ASR_MODEL`, `KJ_ASR_MMPROJ` | Full paths of the speech model and its projector. |
 | `KJ_VLM_MODEL`, `KJ_VLM_MMPROJ` | Full paths of the vision model and its projector. |
-| `KJ_ASR_URL`, `KJ_VLM_URL` | Use a server you already started (for example `http://127.0.0.1:8090`) instead of starting one. The app never stops these. |
+| `KJ_ASR_URL`, `KJ_VLM_URL` | Use a server you already started (for example `http://127.0.0.1:8090`) instead of starting one. The app never stops these. Must be a loopback address (`localhost`, `127.x.x.x`, `[::1]`); anything else is refused so audio and screenshots stay on this machine. |
 | `KJ_VLM_IMAGE_EDGE` | Longest edge in pixels of the screenshot sent to the vision model (default 960). Smaller is faster. |
 
 ## How it behaves

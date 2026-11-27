@@ -8,6 +8,7 @@
 use std::net::TcpListener;
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
@@ -23,6 +24,10 @@ const DEFAULT_IMAGE_EDGE: u32 = 960;
 const SETUP_DOC: &str = "docs/setup/local-models.md";
 
 const READY_TIMEOUT: Duration = Duration::from_secs(180);
+/// A fresh port can be taken between picking it and llama-server binding it.
+const SPAWN_ATTEMPTS: usize = 3;
+const STOP_WAIT: Duration = Duration::from_secs(3);
+const SHUTTING_DOWN: &str = "the app is shutting down";
 const ASR_TIMEOUT: Duration = Duration::from_secs(90);
 const VLM_TIMEOUT: Duration = Duration::from_secs(240);
 
@@ -97,7 +102,9 @@ pub fn plan(
             .filter(|v| !v.is_empty())
     };
     if let Some(url) = get(spec.url_env) {
-        return Ok(Plan::Existing(url.trim_end_matches('/').to_string()));
+        let url = url.trim_end_matches('/').to_string();
+        super::require_loopback(&url).map_err(|error| format!("{}: {error}", spec.url_env))?;
+        return Ok(Plan::Existing(url));
     }
 
     let exe = get(LLAMA_SERVER_ENV)
@@ -171,6 +178,10 @@ pub struct Sidecar {
     spec: Spec,
     data_dir: PathBuf,
     state: Mutex<Option<Running>>,
+    /// Held while a server starts, so concurrent callers start only one
+    /// without blocking `stop`, which only needs `state`.
+    starting: Mutex<()>,
+    shutdown: AtomicBool,
 }
 
 impl Sidecar {
@@ -179,34 +190,57 @@ impl Sidecar {
             spec,
             data_dir,
             state: Mutex::new(None),
+            starting: Mutex::new(()),
+            shutdown: AtomicBool::new(false),
         }
     }
 
-    /// Base URL of a ready server, starting one if needed. Blocks while the
-    /// model loads. The lock is held so concurrent callers start only one.
-    pub fn url(&self) -> Result<String, String> {
-        let mut state = self
-            .state
-            .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner());
+    fn running_url(&self) -> Option<String> {
+        let mut state = self.state.lock().unwrap_or_else(|p| p.into_inner());
         if let Some(running) = state.as_mut() {
             if running.alive() {
-                return Ok(running.url.clone());
+                return Some(running.url.clone());
             }
             *state = None;
         }
+        None
+    }
+
+    /// Base URL of a ready server, starting one if needed. Blocks while the
+    /// model loads; startup polls the shutdown flag so quitting is quick.
+    pub fn url(&self) -> Result<String, String> {
+        if let Some(url) = self.running_url() {
+            return Ok(url);
+        }
+        let _starting = self.starting.lock().unwrap_or_else(|p| p.into_inner());
+        // Another caller may have finished starting while we waited.
+        if let Some(url) = self.running_url() {
+            return Ok(url);
+        }
+        if self.shutdown.load(Ordering::SeqCst) {
+            return Err(SHUTTING_DOWN.to_string());
+        }
         let running = self.start()?;
         let url = running.url.clone();
+        let mut state = self.state.lock().unwrap_or_else(|p| p.into_inner());
+        // `stop` may have run during startup; dropping `running` kills it.
+        if self.shutdown.load(Ordering::SeqCst) {
+            return Err(SHUTTING_DOWN.to_string());
+        }
         *state = Some(running);
         Ok(url)
     }
 
-    /// Stops the server if we started it.
+    /// Stops the server if we started it and refuses further starts.
     pub fn stop(&self) {
-        *self
-            .state
-            .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner()) = None;
+        self.shutdown.store(true, Ordering::SeqCst);
+        *self.state.lock().unwrap_or_else(|p| p.into_inner()) = None;
+        // A start in progress sees the flag within a poll and kills its
+        // child; wait briefly so that happens before the process exits.
+        let deadline = Instant::now() + STOP_WAIT;
+        while self.starting.try_lock().is_err() && Instant::now() < deadline {
+            std::thread::sleep(Duration::from_millis(20));
+        }
     }
 
     fn start(&self) -> Result<Running, String> {
@@ -218,7 +252,7 @@ impl Sidecar {
         )?;
         match chosen {
             Plan::Existing(url) => Ok(Running { url, child: None }),
-            Plan::Spawn(plan) => spawn(&self.spec, &plan),
+            Plan::Spawn(plan) => spawn(&self.spec, &plan, &self.shutdown),
         }
     }
 }
@@ -245,8 +279,33 @@ fn command_args(plan: &SpawnPlan, port: u16) -> Vec<String> {
     ]
 }
 
-fn spawn(spec: &Spec, plan: &SpawnPlan) -> Result<Running, String> {
-    let port = free_port()?;
+/// Why one start attempt failed.
+enum Attempt {
+    /// The child exited, e.g. because another process took the port.
+    Exited(String),
+    Fatal(String),
+}
+
+fn spawn(spec: &Spec, plan: &SpawnPlan, shutdown: &AtomicBool) -> Result<Running, String> {
+    let deadline = Instant::now() + READY_TIMEOUT;
+    let mut last = String::new();
+    for _ in 0..SPAWN_ATTEMPTS {
+        match spawn_once(spec, plan, shutdown, deadline) {
+            Ok(running) => return Ok(running),
+            Err(Attempt::Exited(message)) => last = message,
+            Err(Attempt::Fatal(message)) => return Err(message),
+        }
+    }
+    Err(last)
+}
+
+fn spawn_once(
+    spec: &Spec,
+    plan: &SpawnPlan,
+    shutdown: &AtomicBool,
+    deadline: Instant,
+) -> Result<Running, Attempt> {
+    let port = free_port().map_err(Attempt::Fatal)?;
     let mut command = Command::new(&plan.exe);
     command
         .args(command_args(plan, port))
@@ -260,46 +319,56 @@ fn spawn(spec: &Spec, plan: &SpawnPlan) -> Result<Running, String> {
         command.creation_flags(0x0800_0000);
     }
     let child = command.spawn().map_err(|error| {
-        format!(
+        Attempt::Fatal(format!(
             "could not start llama-server at {}: {error}",
             plan.exe.display()
-        )
+        ))
     })?;
     let mut spawned = Spawned(child);
     let url = format!("http://127.0.0.1:{port}");
     eprintln!("started llama-server for {} on {url}", spec.label);
 
-    let deadline = Instant::now() + READY_TIMEOUT;
+    let exited = |status| {
+        Attempt::Exited(format!(
+            "llama-server for {} stopped right after starting ({status}); the model file may be damaged or the computer short of memory",
+            spec.label
+        ))
+    };
     loop {
-        if let Ok(Some(status)) = spawned.0.try_wait() {
-            return Err(format!(
-                "llama-server for {} stopped right after starting ({status}); the model file may be damaged or the computer short of memory",
-                spec.label
-            ));
+        if shutdown.load(Ordering::SeqCst) {
+            return Err(Attempt::Fatal(SHUTTING_DOWN.to_string()));
         }
+        if let Ok(Some(status)) = spawned.0.try_wait() {
+            return Err(exited(status));
+        }
+        // Someone else may own the port and answer /health, so the child
+        // must still be alive once it reports ready.
         if is_ready(&url) {
-            return Ok(Running {
-                url,
-                child: Some(spawned),
-            });
+            return match spawned.0.try_wait() {
+                Ok(None) => Ok(Running {
+                    url,
+                    child: Some(spawned),
+                }),
+                Ok(Some(status)) => Err(exited(status)),
+                Err(error) => Err(Attempt::Fatal(format!(
+                    "could not check llama-server for {}: {error}",
+                    spec.label
+                ))),
+            };
         }
         if Instant::now() >= deadline {
-            return Err(format!(
+            return Err(Attempt::Fatal(format!(
                 "the {} model did not finish loading within {} seconds",
                 spec.label,
                 READY_TIMEOUT.as_secs()
-            ));
+            )));
         }
         std::thread::sleep(Duration::from_millis(250));
     }
 }
 
 fn is_ready(url: &str) -> bool {
-    let config = ureq::Agent::config_builder()
-        .timeout_global(Some(Duration::from_secs(2)))
-        .http_status_as_error(false)
-        .build();
-    ureq::Agent::new_with_config(config)
+    super::local_agent(None, Duration::from_secs(2))
         .get(format!("{url}/health"))
         .call()
         .is_ok_and(|response| response.status().as_u16() == 200)
@@ -407,6 +476,19 @@ mod tests {
     fn a_url_in_the_environment_wins_and_is_trimmed() {
         let chosen = plan_with(&VLM, &[("KJ_VLM_URL", " http://127.0.0.1:8089/ ")], &[]);
         assert_eq!(chosen, Ok(Plan::Existing("http://127.0.0.1:8089".into())));
+    }
+
+    #[test]
+    fn a_url_override_must_be_local() {
+        let error = plan_with(&ASR, &[("KJ_ASR_URL", "http://example.com:8080")], &[]).unwrap_err();
+        assert!(error.contains("KJ_ASR_URL") && error.contains("not a local address"));
+    }
+
+    #[test]
+    fn no_server_starts_after_stop() {
+        let sidecar = Sidecar::new(VLM, PathBuf::from("/nowhere"));
+        sidecar.stop();
+        assert_eq!(sidecar.url().unwrap_err(), SHUTTING_DOWN);
     }
 
     #[test]
