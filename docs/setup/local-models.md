@@ -41,6 +41,10 @@ All optional. The app reads them at start-up and on each server start.
 - The servers listen on `127.0.0.1` only, on a free port chosen at start.
 - If a file is missing, the app shows which folder and file name it expected.
 
+## Cloud models instead
+
+To answer or transcribe with your own Anthropic or OpenAI key instead of these local models, see [cloud-api-keys.md](cloud-api-keys.md).
+
 ## Trying the loop without the app
 
 ```
