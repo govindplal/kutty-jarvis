@@ -1,0 +1,23 @@
+{
+  "finding": "0004-recording-start-latency",
+  "date": "2026-11-20",
+  "environment": {
+    "cpu": "Intel Core i7-10750H",
+    "os": "Windows 11",
+    "audio_devices": ["Realtek High Definition Audio", "Intel Display Audio"],
+    "build": "debug (npx tauri build --debug --no-bundle)",
+    "audio_library": "cpal 0.15 (WASAPI)"
+  },
+  "method": "Simulated Ctrl+Alt+Space hold of 2000 ms via keybd_event; timings read from the recording-finished event shown in the window. Times are measured from Recorder::start (key down).",
+  "runs": [
+    { "build": "no warm-up", "launch": "1", "trial": 1, "held_s": 2.0, "recorded_s": 0.8, "first_audio_s": 1.3 },
+    { "build": "no warm-up", "launch": "1", "trial": 2, "held_s": 2.0, "recorded_s": 1.9, "first_audio_s": 0.1 },
+    { "build": "no warm-up", "launch": "1", "trial": 3, "held_s": 2.0, "recorded_s": 1.9, "first_audio_s": 0.1 },
+    { "build": "warm-up", "launch": "A", "trial": 1, "held_s": 2.0, "recorded_s": 1.9, "first_audio_s": 0.2 },
+    { "build": "warm-up", "launch": "A", "trial": 2, "held_s": 2.0, "recorded_s": 1.9, "first_audio_s": 0.1 },
+    { "build": "warm-up", "launch": "B", "trial": 1, "held_s": 2.1, "recorded_s": 1.9, "first_audio_s": 0.2 },
+    { "build": "warm-up", "launch": "B", "trial": 2, "held_s": 2.0, "recorded_s": 1.9, "first_audio_s": 0.1 },
+    { "build": "no warm-up (control)", "launch": "C", "trial": 1, "held_s": 2.0, "recorded_s": 0.9, "first_audio_s": 1.2 },
+    { "build": "no warm-up (control)", "launch": "D", "trial": 1, "held_s": 2.0, "recorded_s": 0.9, "first_audio_s": 1.2 }
+  ]
+}

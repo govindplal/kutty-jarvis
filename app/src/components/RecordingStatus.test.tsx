@@ -25,10 +25,25 @@ describe("RecordingStatus", () => {
   it("shows the duration and size of a finished recording", async () => {
     render(<RecordingStatus />);
     await act(async () => {});
-    act(() => handlers.get(RECORDING_FINISHED_EVENT)?.({ payload: { durationMs: 2450, wavBytes: 81920 } }));
-    expect(screen.getByRole("status").textContent).toBe(
-      "Recorded 2.5 s (80 KB, kept in memory only)",
+    act(() =>
+      handlers.get(RECORDING_FINISHED_EVENT)?.({
+        payload: { durationMs: 1300, wavBytes: 40960, heldMs: 2000, readyMs: 150, firstSampleMs: 700 },
+      }),
     );
+    expect(screen.getByRole("status").textContent).toBe(
+      "Recorded 1.3 s of 2.0 s held; first audio after 0.7 s (40 KB, kept in memory only)",
+    );
+  });
+
+  it("says when no audio arrived at all", async () => {
+    render(<RecordingStatus />);
+    await act(async () => {});
+    act(() =>
+      handlers.get(RECORDING_FINISHED_EVENT)?.({
+        payload: { durationMs: 0, wavBytes: 44, heldMs: 900, readyMs: 120, firstSampleMs: null },
+      }),
+    );
+    expect(screen.getByRole("status").textContent).toContain("no audio arrived");
   });
 
   it("shows why a recording failed", async () => {

@@ -2,6 +2,7 @@
 
 - Status: accepted
 - Date: 2026-11-20
+- Amended: 2026-11-20 (start-up gap measured and fixed)
 - Deciders: Claude Code, owner informed
 - Evidence: 18 Rust tests (downmix, resampling, WAV round trip); end-to-end run in the built app: holding the key produced a recording shown in the window (1.3 s, 39 KB, 16 kHz mono 16-bit).
 
@@ -26,6 +27,6 @@ The buddy listens for a question. Microphone access is the most sensitive capabi
 
 - Good: microphone access is bounded by the key, and a test can check the output format. The 16 kHz mono input matches the tested speech model.
 - Cost: the first recording may miss a few milliseconds while the stream starts. Resampling is simple linear interpolation, which is adequate for speech but not for music.
-- Measured gap: a held key of about 2 s produced a 1.3 s recording. The missing time is probably stream start-up after the key goes down; not yet measured precisely. Speech quality was not tested either: the run used room noise, not a spoken question.
+- Start-up gap, resolved: the first recording after launch lost 1.2 to 1.3 s to a cold start of the audio device. A lookup of the default device and its settings at launch, which does not open the microphone, cuts it to 0.2 s ([finding 0004](../findings/0004-recording-start-latency.md)). Speech quality is still untested: runs so far used room noise, not a spoken question.
 - Not yet covered: a microphone-in-use indicator in the tray, a first-run privacy notice, device selection in settings, and choosing a device other than the default.
 - Revisit if we add a wake word or continuous listening; that would need a new ADR and a visible indicator.
