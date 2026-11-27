@@ -26,3 +26,9 @@ The buddy should be one keypress away from any app, without a window in the way.
 - Cost: Ctrl+Alt+Space may clash with some IME or app shortcuts; the shortcut must become configurable.
 - Not yet verified: the tray icon and menu were not checked visually or by automation.
 - Baseline: main process working set about 27 MB at idle (debug build, WebView2 child processes not included).
+
+## Update 2026-11-27: a taken shortcut is not fatal, and it can be overridden
+
+- **Problem.** If another program already owned Ctrl+Alt+Space, registering it failed and the app panicked at start-up with "HotKey already registered". The most likely holder on the owner's machine is the Claude desktop app (its quick-entry shortcut); this is a suspicion, not confirmed. Many target users will run Claude desktop too.
+- **Change.** A registration failure is now logged, the app stays in the tray, the window shows "Ctrl+Alt+Space is used by another app; push-to-talk is off" and the tray tooltip says the same.
+- **Override.** The environment variable `KJ_PUSH_TO_TALK` (for example `ctrl+alt+k`) replaces the default, parsed with the plugin's own shortcut parser. An invalid value is reported in the window and the default is used. The default key is unchanged; there is still no settings UI.
