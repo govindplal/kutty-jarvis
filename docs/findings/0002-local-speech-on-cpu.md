@@ -64,7 +64,9 @@ Raw output: [`data/0002-tts-benchmark.json`](data/0002-tts-benchmark.json). Insi
 
 Use LFM3-Audio for local speech recognition. For local speech output use a small dedicated synthesizer such as Piper; LFM3's own speech output is too slow for conversation on CPU, though it may suit a "high quality, wait for it" mode. A full local round trip is dominated by vision (about 8 s, finding 0001), not speech.
 
-## Licensing notes (unresolved)
+## Licensing notes (reviewed 2026-11-27, see [research 0002](../research/0002-speech-voice-licences.md))
+
+Update 2026-11-27: the Lessac voices are research-only and must not be bundled or shipped as the default; `en_US-ljspeech-medium` (public domain) is the proposed replacement. The notes below are the original, pre-review text.
 
 - Piper's original repository is MIT but archived; its maintained successor is GPL-3.0. Running the old binary as a separate process keeps GPL out of our code; confirm before shipping.
 - The Lessac voices are trained on the Blizzard 2013 Lessac dataset, which has its own licence terms we have not reviewed. Do not bundle a voice until its licence is checked; download on first run instead.

@@ -41,6 +41,8 @@ Everything we learn and decide is written down here. The goal is that a new cont
 
 ### Research
 - [0001 HeyClicky and the open-source landscape](research/0001-heyclicky-and-open-source-landscape.md)
+- [0002 Licences for local speech output (Piper, Lessac voices, alternatives)](research/0002-speech-voice-licences.md)
 
 ### Devlog
 - [2026-11-20](devlog/2026-11-20.md)
+- [2026-11-27](devlog/2026-11-27.md)

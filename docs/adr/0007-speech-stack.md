@@ -30,3 +30,12 @@ The buddy needs speech-to-text for the user's question and text-to-speech for th
 - Cost: two local engines to download and manage; extra memory (unmeasured).
 - Risks: the Lessac voice dataset licence and Piper's archived and GPL-successor status need review; recognition accuracy on real, noisy speech is untested.
 - Revisit when: a faster LFM speech-output path appears, a noisy-speech eval shows high WER, or a voice licence blocks distribution.
+
+## Amendment 2026-11-27: default voice and download policy
+
+Status stays proposed. The voice licence review ([research 0002](../research/0002-speech-voice-licences.md)) found that the Lessac voices come from the Blizzard 2013 dataset, licensed for research only with no commercial use or redistribution. A voice licence now blocks distribution of lessac, which this ADR named as a revisit trigger. Changes:
+
+- Default Piper voice: `en_US-ljspeech-medium` (public domain, trained from scratch, 63.5 MB) instead of `en_US-lessac-medium` and `-low`. Speed on the 2023 binary and voice quality are still to be checked (assumed equal to lessac-medium for speed).
+- Piper engine: pin `rhasspy/piper` `2023.11.14-2` (Windows amd64 zip), run as a separate process. It links GPL-3.0 espeak-ng, so do not bundle it.
+- Engine and voice are downloaded on first run with a pinned SHA-256, with the voice's `MODEL_CARD` kept beside it; neither is bundled in the installer.
+- The Lessac voices stay in spikes only. The benchmark numbers in finding 0002 are unchanged.
