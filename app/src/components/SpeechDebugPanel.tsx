@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import {
@@ -26,6 +26,10 @@ export function SpeechDebugPanel() {
   const [available, setAvailable] = useState(false);
   const [text, setText] = useState(SAMPLE_TEXT);
   const [status, setStatus] = useState("");
+  // Ids grow with every utterance. `active` is the one just requested (null
+  // until the command answers); anything at or below `floor` is older.
+  const active = useRef<number | null>(null);
+  const floor = useRef(0);
 
   useEffect(() => {
     let live = true;
@@ -40,7 +44,12 @@ export function SpeechDebugPanel() {
   useEffect(() => {
     if (!available) return;
     const unlisten = ["speech-started", "speech-finished", "speech-failed"].map((name) =>
-      listen<SpeechEvent>(name, (event) => setStatus(describeSpeech(name, event.payload))),
+      listen<SpeechEvent>(name, (event) => {
+        const { id } = event.payload;
+        const current = active.current;
+        if (current === null ? id <= floor.current : id !== current) return;
+        setStatus(describeSpeech(name, event.payload));
+      }),
     );
     const download = listen<DownloadEvent>("speech-download", (event) =>
       setStatus(describeDownload(event.payload)),
@@ -53,9 +62,11 @@ export function SpeechDebugPanel() {
   if (!available) return null;
 
   async function speak() {
+    floor.current = Math.max(floor.current, active.current ?? 0);
+    active.current = null;
+    setStatus("Preparing speech…");
     try {
-      await invoke("debug_speak", { text });
-      setStatus("Preparing speech…");
+      active.current = await invoke<number>("debug_speak", { text });
     } catch (error) {
       setStatus(`Speaking failed: ${String(error)}`);
     }

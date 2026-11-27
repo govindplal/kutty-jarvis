@@ -1,6 +1,7 @@
 export const SAMPLE_TEXT = "Hello! I can see your screen. The save button is in the top left.";
 
 export type SpeechEvent = {
+  id: number;
   engine: string;
   fallback?: string;
   interrupted?: boolean;

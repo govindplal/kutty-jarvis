@@ -19,11 +19,15 @@ afterEach(() => {
   cleanup();
   invoke.mockReset();
   handlers.clear();
+  lastId = 0;
 });
+
+let lastId = 0;
 
 function debugBuild() {
   invoke.mockImplementation(async (command: string) => {
     if (command === "debug_speech_available") return true;
+    if (command === "debug_speak") return ++lastId;
     return undefined;
   });
 }
@@ -66,7 +70,7 @@ describe("SpeechDebugPanel", () => {
 
     act(() =>
       handlers.get("speech-started")?.({
-        payload: { engine: "sapi", fallback: "piper is still downloading" },
+        payload: { id: 1, engine: "sapi", fallback: "piper is still downloading" },
       }),
     );
     expect(screen.getByRole("status").textContent).toBe(
@@ -78,12 +82,39 @@ describe("SpeechDebugPanel", () => {
   });
 });
 
+describe("SpeechDebugPanel utterance ids", () => {
+  it("ignores late events of an earlier utterance", async () => {
+    debugBuild();
+    render(<SpeechDebugPanel />);
+    await screen.findByLabelText("Text to speak");
+    await vi.waitFor(() => expect(handlers.has("speech-finished")).toBe(true));
+    const emit = (name: string, payload: object) =>
+      act(() => handlers.get(name)?.({ payload }));
+
+    await userEvent.click(screen.getByRole("button", { name: "Speak" }));
+    emit("speech-started", { id: 1, engine: "piper" });
+    await userEvent.click(screen.getByRole("button", { name: "Speak" }));
+    expect(screen.getByRole("status").textContent).toBe("Preparing speech…");
+
+    // The first utterance is cut off after the second was requested.
+    emit("speech-finished", { id: 1, engine: "piper", interrupted: true });
+    expect(screen.getByRole("status").textContent).toBe("Preparing speech…");
+
+    emit("speech-started", { id: 2, engine: "piper" });
+    expect(screen.getByRole("status").textContent).toBe("Speaking with piper");
+    emit("speech-finished", { id: 1, engine: "piper", interrupted: true });
+    expect(screen.getByRole("status").textContent).toBe("Speaking with piper");
+    emit("speech-finished", { id: 2, engine: "piper", interrupted: false });
+    expect(screen.getByRole("status").textContent).toBe("Finished (piper)");
+  });
+});
+
 describe("describeSpeech / describeDownload", () => {
   it("describes interruptions, failures and download problems", () => {
-    expect(describeSpeech("speech-finished", { engine: "piper", interrupted: true })).toBe(
+    expect(describeSpeech("speech-finished", { id: 1, engine: "piper", interrupted: true })).toBe(
       "Interrupted (piper)",
     );
-    expect(describeSpeech("speech-failed", { engine: "sapi", error: "no device" })).toBe(
+    expect(describeSpeech("speech-failed", { id: 1, engine: "sapi", error: "no device" })).toBe(
       "Speech failed (sapi): no device",
     );
     expect(describeDownload({ status: "failed", error: "offline" })).toBe(
