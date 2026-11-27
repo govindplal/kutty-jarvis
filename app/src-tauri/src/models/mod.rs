@@ -1,11 +1,14 @@
 //! Model providers behind small interfaces (ADR 0004).
 //!
 //! The assistant only knows [`SpeechToText`] and [`Assistant`]. Local
-//! `llama-server` sidecars implement them today (ADR 0012); a cloud provider
-//! with the user's own key would be another implementation.
+//! `llama-server` sidecars implement them by default (ADR 0012); [`cloud`]
+//! providers with the user's own key are the optional alternative
+//! (ADR 0015), chosen per question by [`select`].
 
+pub mod cloud;
 pub mod llama_server;
 pub mod openai_compat;
+pub mod select;
 
 /// Turns a recorded WAV (16-bit PCM) into text.
 pub trait SpeechToText: Send + Sync {
@@ -27,6 +30,28 @@ pub struct Question {
     /// Numbered UI elements of the foreground window, as prompt text.
     /// Empty when the list is unavailable.
     pub elements: String,
+}
+
+/// Longest edge of the screenshot sent to a model.
+pub const IMAGE_EDGE_ENV: &str = "KJ_VLM_IMAGE_EDGE";
+const DEFAULT_IMAGE_EDGE: u32 = 960;
+
+/// Copy of `question` with the screenshot shrunk. Pointing uses the element
+/// list, so the picture only gives context and a small one keeps answers
+/// fast and cheap (finding 0003).
+pub fn shrink_for_model(question: &Question) -> Question {
+    let edge = std::env::var(IMAGE_EDGE_ENV)
+        .ok()
+        .and_then(|value| value.trim().parse::<u32>().ok())
+        .filter(|edge| *edge > 0)
+        .unwrap_or(DEFAULT_IMAGE_EDGE);
+    let mut question = question.clone();
+    if let Some(png) = &question.screenshot_png
+        && let Ok(small) = crate::capture::shrink_png(png, edge)
+    {
+        question.screenshot_png = Some(small);
+    }
+    question
 }
 
 /// Fails unless `url` points at this machine (127.0.0.0/8, ::1 or

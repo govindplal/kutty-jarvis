@@ -39,6 +39,8 @@ flate2 = "1"
 tar = "0.4"
 
 [target.'cfg(windows)'.dependencies]
+# API keys live in Windows Credential Manager (ADR 0015).
+keyring = { version = "3", default-features = false, features = ["windows-native"] }
 # UI Automation (element list), overlay window styles and SAPI speech. Same
 # version Tauri already pulls in, so it adds no new crate to the build.
 windows = { version = "0.62", features = [

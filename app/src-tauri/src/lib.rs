@@ -5,11 +5,14 @@ mod capture;
 #[cfg(debug_assertions)]
 mod debug_commands;
 mod hotkey;
+mod model_commands;
 /// Model providers and local server management; public for the `ask` example.
 pub mod models;
 /// Pointing overlay; public so the model loop can call `overlay::point_at`.
 pub mod overlay;
 mod push_to_talk;
+mod secrets;
+mod settings;
 mod tray;
 /// Spoken replies; public so the model loop can call `tts::speak` and
 /// `tts::stop`.
@@ -42,8 +45,10 @@ pub fn run() {
                 app.path().app_local_data_dir()?,
             ));
             app.manage(assistant::runtime::Providers {
-                speech_to_text: servers.speech_to_text(),
-                assistant: servers.assistant(),
+                local_speech_to_text: servers.speech_to_text(),
+                local_assistant: servers.assistant(),
+                store: secrets::default_store(),
+                config_dir: app.path().app_config_dir()?,
             });
             app.manage(servers);
             std::thread::spawn(audio::warm_up);
@@ -67,6 +72,11 @@ pub fn run() {
     let builder = builder.invoke_handler(tauri::generate_handler![
         greet,
         hotkey::push_to_talk_status,
+        model_commands::get_model_settings,
+        model_commands::set_model_settings,
+        model_commands::set_api_key,
+        model_commands::clear_api_key,
+        model_commands::api_key_status,
         debug_commands::debug_pointing_available,
         debug_commands::debug_list_elements,
         debug_commands::debug_point_at,
@@ -75,8 +85,15 @@ pub fn run() {
         debug_commands::debug_stop_speaking,
     ]);
     #[cfg(not(debug_assertions))]
-    let builder =
-        builder.invoke_handler(tauri::generate_handler![greet, hotkey::push_to_talk_status]);
+    let builder = builder.invoke_handler(tauri::generate_handler![
+        greet,
+        hotkey::push_to_talk_status,
+        model_commands::get_model_settings,
+        model_commands::set_model_settings,
+        model_commands::set_api_key,
+        model_commands::clear_api_key,
+        model_commands::api_key_status,
+    ]);
 
     builder
         .build(tauri::generate_context!())
