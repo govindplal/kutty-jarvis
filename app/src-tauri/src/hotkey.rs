@@ -40,12 +40,89 @@ struct ScreenCaptured {
     png_bytes: usize,
 }
 
+/// Environment variable that overrides the push-to-talk shortcut (ADR 0008).
+pub const SHORTCUT_ENV: &str = "KJ_PUSH_TO_TALK";
+const DEFAULT_LABEL: &str = "Ctrl+Alt+Space";
+
 pub fn push_to_talk_shortcut() -> Shortcut {
     Shortcut::new(Some(Modifiers::CONTROL | Modifiers::ALT), Code::Space)
 }
 
+/// What the UI needs to know about the push-to-talk shortcut.
+#[derive(Serialize, Clone, Debug, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct ShortcutStatus {
+    /// Human-readable shortcut, e.g. `Ctrl+Alt+Space`.
+    pub label: String,
+    /// False when another program already owns the shortcut.
+    pub registered: bool,
+    /// Explains a fallback or a conflict; `None` when all is well.
+    pub notice: Option<String>,
+}
+
+struct Resolved {
+    shortcut: Shortcut,
+    label: String,
+    notice: Option<String>,
+}
+
+/// Picks the shortcut from the override value, falling back to the default
+/// when it is absent or cannot be parsed.
+fn resolve_shortcut(override_value: Option<&str>) -> Resolved {
+    let default = || Resolved {
+        shortcut: push_to_talk_shortcut(),
+        label: DEFAULT_LABEL.to_string(),
+        notice: None,
+    };
+    let Some(raw) = override_value.map(str::trim).filter(|v| !v.is_empty()) else {
+        return default();
+    };
+    match raw.parse::<Shortcut>() {
+        Ok(shortcut) => Resolved {
+            shortcut,
+            label: raw.to_string(),
+            notice: None,
+        },
+        Err(error) => Resolved {
+            notice: Some(format!(
+                "{SHORTCUT_ENV}=\"{raw}\" is not a valid shortcut ({error}); using {DEFAULT_LABEL}"
+            )),
+            ..default()
+        },
+    }
+}
+
+fn conflict_message(label: &str) -> String {
+    format!("{label} is used by another app; push-to-talk is off")
+}
+
+fn finish_status(resolved: &Resolved, registered: bool) -> ShortcutStatus {
+    let notice = if registered {
+        resolved.notice.clone()
+    } else {
+        let conflict = conflict_message(&resolved.label);
+        Some(match &resolved.notice {
+            Some(earlier) => format!("{earlier}. {conflict}"),
+            None => conflict,
+        })
+    };
+    ShortcutStatus {
+        label: resolved.label.clone(),
+        registered,
+        notice,
+    }
+}
+
+/// Lets the window ask for the status after it loads (events sent during
+/// setup would arrive before the page listens).
+#[tauri::command]
+pub fn push_to_talk_status(status: tauri::State<ShortcutStatus>) -> ShortcutStatus {
+    status.inner().clone()
+}
+
 pub fn register(app: &App) -> tauri::Result<()> {
-    let shortcut = push_to_talk_shortcut();
+    let resolved = resolve_shortcut(std::env::var(SHORTCUT_ENV).ok().as_deref());
+    let shortcut = resolved.shortcut;
     let state = Mutex::new(PushToTalk::default());
 
     app.handle().plugin(
@@ -78,9 +155,30 @@ pub fn register(app: &App) -> tauri::Result<()> {
             .build(),
     )?;
 
-    app.global_shortcut()
-        .register(push_to_talk_shortcut())
-        .map_err(|error| tauri::Error::Anyhow(error.into()))?;
+    // A taken shortcut must not stop the app: stay in the tray and say so.
+    let registered = match app.global_shortcut().register(shortcut) {
+        Ok(()) => {
+            eprintln!("push-to-talk registered: {}", resolved.label);
+            true
+        }
+        Err(error) => {
+            eprintln!("push-to-talk not registered ({}): {error}", resolved.label);
+            false
+        }
+    };
+    let status = finish_status(&resolved, registered);
+    if let Some(notice) = &status.notice {
+        eprintln!("push-to-talk notice: {notice}");
+    }
+    let tooltip = if registered {
+        format!("kutty-jarvis: hold {} to talk", status.label)
+    } else {
+        format!("kutty-jarvis: {}", conflict_message(&status.label))
+    };
+    if let Some(tray) = app.tray_by_id("main") {
+        let _ = tray.set_tooltip(Some(tooltip));
+    }
+    app.manage(status);
     Ok(())
 }
 
@@ -159,5 +257,66 @@ fn capture_in_background(app: AppHandle) {
 fn emit<P: Serialize + Clone>(app: &AppHandle, event: &str, payload: P) {
     if let Err(error) = app.emit(event, payload) {
         eprintln!("failed to emit {event}: {error}");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn no_override_uses_the_default() {
+        for value in [None, Some(""), Some("   ")] {
+            let resolved = resolve_shortcut(value);
+            assert_eq!(resolved.shortcut, push_to_talk_shortcut());
+            assert_eq!(resolved.label, "Ctrl+Alt+Space");
+            assert_eq!(resolved.notice, None);
+        }
+    }
+
+    #[test]
+    fn valid_override_replaces_the_default() {
+        let resolved = resolve_shortcut(Some(" ctrl+alt+k "));
+        let expected = Shortcut::new(Some(Modifiers::CONTROL | Modifiers::ALT), Code::KeyK);
+        assert_eq!(resolved.shortcut, expected);
+        assert_eq!(resolved.label, "ctrl+alt+k");
+        assert_eq!(resolved.notice, None);
+    }
+
+    #[test]
+    fn invalid_override_falls_back_with_a_notice() {
+        let resolved = resolve_shortcut(Some("ctrl+alt+banana"));
+        assert_eq!(resolved.shortcut, push_to_talk_shortcut());
+        assert_eq!(resolved.label, "Ctrl+Alt+Space");
+        let notice = resolved.notice.expect("notice");
+        assert!(notice.contains("ctrl+alt+banana"));
+        assert!(notice.contains("using Ctrl+Alt+Space"));
+    }
+
+    #[test]
+    fn conflict_is_reported_and_keeps_an_earlier_notice() {
+        let plain = resolve_shortcut(None);
+        let status = finish_status(&plain, false);
+        assert!(!status.registered);
+        assert_eq!(
+            status.notice.as_deref(),
+            Some("Ctrl+Alt+Space is used by another app; push-to-talk is off")
+        );
+
+        let fallback = resolve_shortcut(Some("nonsense"));
+        let status = finish_status(&fallback, false);
+        let notice = status.notice.expect("notice");
+        assert!(notice.contains("not a valid shortcut"));
+        assert!(notice.ends_with("push-to-talk is off"));
+    }
+
+    #[test]
+    fn success_has_no_notice_unless_it_fell_back() {
+        assert_eq!(finish_status(&resolve_shortcut(None), true).notice, None);
+        assert!(
+            finish_status(&resolve_shortcut(Some("nonsense")), true)
+                .notice
+                .is_some()
+        );
     }
 }
