@@ -7,6 +7,7 @@ import { ScreenCaptureStatus } from "./components/ScreenCaptureStatus";
 import { RecordingStatus } from "./components/RecordingStatus";
 import { PointingDebugPanel } from "./components/PointingDebugPanel";
 import { AssistantStatus } from "./components/AssistantStatus";
+import { SpeechDebugPanel } from "./components/SpeechDebugPanel";
 
 function App() {
   const [greetMsg, setGreetMsg] = useState("");
@@ -25,6 +26,7 @@ function App() {
       <RecordingStatus />
       <AssistantStatus />
       <PointingDebugPanel />
+      <SpeechDebugPanel />
 
       <div className="row">
         <a href="https://vite.dev" target="_blank">
