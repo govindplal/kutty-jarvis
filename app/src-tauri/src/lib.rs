@@ -1,8 +1,12 @@
+/// The model loop; public for the `ask` example.
+pub mod assistant;
 mod audio;
 mod capture;
 #[cfg(debug_assertions)]
 mod debug_commands;
 mod hotkey;
+/// Model providers and local server management; public for the `ask` example.
+pub mod models;
 /// Pointing overlay; public so the model loop can call `overlay::point_at`.
 pub mod overlay;
 mod push_to_talk;
@@ -11,7 +15,9 @@ mod tray;
 /// `uia::list_elements` and `uia::render_for_prompt`.
 pub mod uia;
 
-use tauri::{Manager, WindowEvent};
+use std::sync::Arc;
+
+use tauri::{Manager, RunEvent, WindowEvent};
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
@@ -27,6 +33,16 @@ pub fn run() {
             app.manage(capture::LatestScreenshot::default());
             app.manage(audio::ActiveRecorder::default());
             app.manage(audio::LatestRecording::default());
+            app.manage(assistant::runtime::PendingTurn::default());
+            app.manage(assistant::runtime::Busy::default());
+            let servers = Arc::new(models::llama_server::LlamaServers::new(
+                app.path().app_local_data_dir()?,
+            ));
+            app.manage(assistant::runtime::Providers {
+                speech_to_text: servers.speech_to_text(),
+                assistant: servers.assistant(),
+            });
+            app.manage(servers);
             std::thread::spawn(audio::warm_up);
             tray::create(app)?;
             hotkey::register(app)?;
@@ -56,8 +72,16 @@ pub fn run() {
         builder.invoke_handler(tauri::generate_handler![greet, hotkey::push_to_talk_status]);
 
     builder
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application")
+        .run(|app, event| {
+            // Only the model servers this app started are stopped.
+            if let RunEvent::Exit = event
+                && let Some(servers) = app.try_state::<Arc<models::llama_server::LlamaServers>>()
+            {
+                servers.stop_all();
+            }
+        });
 }
 
 #[cfg(test)]

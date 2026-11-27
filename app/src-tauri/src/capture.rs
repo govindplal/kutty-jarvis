@@ -56,6 +56,18 @@ pub fn encode_png(image: &RgbaImage) -> Result<Vec<u8>, String> {
     Ok(bytes.into_inner())
 }
 
+/// Re-encodes `png` with its longest edge at most `max_edge`. Returns the
+/// input unchanged when it already fits.
+pub fn shrink_png(png: &[u8], max_edge: u32) -> Result<Vec<u8>, String> {
+    let image = xcap::image::load_from_memory_with_format(png, ImageFormat::Png)
+        .map_err(|error| format!("could not read screenshot: {error}"))?
+        .to_rgba8();
+    if fit_within(image.width(), image.height(), max_edge) == (image.width(), image.height()) {
+        return Ok(png.to_vec());
+    }
+    encode_png(&downscale(&image, max_edge))
+}
+
 /// Captures the primary monitor (or the first one if none is marked primary).
 pub fn capture_primary() -> Result<Screenshot, String> {
     let monitors = Monitor::all().map_err(|error| format!("could not list displays: {error}"))?;
@@ -105,6 +117,16 @@ mod tests {
         let image = RgbaImage::new(2560, 1440);
         let small = downscale(&image, 1280);
         assert_eq!((small.width(), small.height()), (1280, 720));
+    }
+
+    #[test]
+    fn shrink_png_resizes_only_when_needed() {
+        let big = encode_png(&RgbaImage::new(1280, 720)).unwrap();
+        let small = shrink_png(&big, 640).unwrap();
+        let decoded = xcap::image::load_from_memory(&small).unwrap();
+        assert_eq!((decoded.width(), decoded.height()), (640, 360));
+        assert_eq!(shrink_png(&big, 2000).unwrap(), big);
+        assert!(shrink_png(b"not a png", 640).is_err());
     }
 
     #[test]
