@@ -1,6 +1,10 @@
 mod audio;
 mod capture;
+#[cfg(debug_assertions)]
+mod debug_commands;
 mod hotkey;
+/// Pointing overlay; public so the model loop can call `overlay::point_at`.
+pub mod overlay;
 mod push_to_talk;
 mod tray;
 /// On-screen UI elements; public so the model loop can call
@@ -17,7 +21,7 @@ fn greet(name: &str) -> String {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    let builder = tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             app.manage(capture::LatestScreenshot::default());
@@ -26,6 +30,9 @@ pub fn run() {
             std::thread::spawn(audio::warm_up);
             tray::create(app)?;
             hotkey::register(app)?;
+            overlay::init(app)?;
+            #[cfg(debug_assertions)]
+            app.manage(debug_commands::LastElements::default());
             Ok(())
         })
         .on_window_event(|window, event| {
@@ -34,8 +41,19 @@ pub fn run() {
                 api.prevent_close();
                 let _ = window.hide();
             }
-        })
-        .invoke_handler(tauri::generate_handler![greet])
+        });
+
+    #[cfg(debug_assertions)]
+    let builder = builder.invoke_handler(tauri::generate_handler![
+        greet,
+        debug_commands::debug_pointing_available,
+        debug_commands::debug_list_elements,
+        debug_commands::debug_point_at,
+    ]);
+    #[cfg(not(debug_assertions))]
+    let builder = builder.invoke_handler(tauri::generate_handler![greet]);
+
+    builder
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
