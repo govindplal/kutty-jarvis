@@ -60,29 +60,49 @@ pub fn convert_for_device(decoded: &Decoded, out_rate: u32, out_channels: u16) -
     out
 }
 
-/// Blocks until the WAV has played or `cancel` is raised.
-pub fn play_wav(wav: &[u8], cancel: &Cancel) -> Result<(), String> {
-    let decoded = decode_wav(wav)?;
+/// Why playback ended without finishing. `Setup` means no audio was ever
+/// started, so another engine may still speak the reply.
+#[derive(Debug, PartialEq)]
+pub enum PlayError {
+    Setup(String),
+    Playing(String),
+}
+
+impl std::fmt::Display for PlayError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            PlayError::Setup(e) | PlayError::Playing(e) => f.write_str(e),
+        }
+    }
+}
+
+/// Blocks until the WAV has played or `cancel` is raised. `on_start` runs
+/// once the device is really playing, never when setup fails.
+pub fn play_wav(wav: &[u8], cancel: &Cancel, on_start: impl FnOnce()) -> Result<(), PlayError> {
+    let decoded = decode_wav(wav).map_err(PlayError::Setup)?;
     let device = cpal::default_host()
         .default_output_device()
-        .ok_or("no audio output device")?;
+        .ok_or_else(|| PlayError::Setup("no audio output device".into()))?;
     let config = device
         .default_output_config()
-        .map_err(|e| format!("no output configuration: {e}"))?;
+        .map_err(|e| PlayError::Setup(format!("no output configuration: {e}")))?;
     let rate = config.sample_rate().0;
     let samples = Arc::new(convert_for_device(&decoded, rate, config.channels()));
     let position = Arc::new(AtomicUsize::new(0));
 
     let stream_config = config.config();
-    let stream = match config.sample_format() {
-        SampleFormat::F32 => build::<f32>(&device, &stream_config, &samples, &position),
-        SampleFormat::I16 => build::<i16>(&device, &stream_config, &samples, &position),
-        SampleFormat::U16 => build::<u16>(&device, &stream_config, &samples, &position),
-        other => return Err(format!("unsupported output format: {other:?}")),
-    }?;
+    let stream = build_for_format(
+        config.sample_format(),
+        &device,
+        &stream_config,
+        &samples,
+        &position,
+    )
+    .map_err(PlayError::Setup)?;
     stream
         .play()
-        .map_err(|e| format!("could not start playback: {e}"))?;
+        .map_err(|e| PlayError::Setup(format!("could not start playback: {e}")))?;
+    on_start();
 
     let audio_length = Duration::from_secs_f64(
         samples.len() as f64 / f64::from(config.channels()) / f64::from(rate),
@@ -93,7 +113,7 @@ pub fn play_wav(wav: &[u8], cancel: &Cancel) -> Result<(), String> {
             return Ok(());
         }
         if Instant::now() > deadline {
-            return Err("audio output stalled".into());
+            return Err(PlayError::Playing("audio output stalled".into()));
         }
         sleep(Duration::from_millis(20));
     }
@@ -103,6 +123,28 @@ pub fn play_wav(wav: &[u8], cancel: &Cancel) -> Result<(), String> {
         sleep(Duration::from_millis(10));
     }
     Ok(())
+}
+
+fn build_for_format(
+    format: SampleFormat,
+    device: &cpal::Device,
+    config: &cpal::StreamConfig,
+    samples: &Arc<Vec<f32>>,
+    position: &Arc<AtomicUsize>,
+) -> Result<cpal::Stream, String> {
+    match format {
+        SampleFormat::F32 => build::<f32>(device, config, samples, position),
+        SampleFormat::F64 => build::<f64>(device, config, samples, position),
+        SampleFormat::I8 => build::<i8>(device, config, samples, position),
+        SampleFormat::I16 => build::<i16>(device, config, samples, position),
+        SampleFormat::I32 => build::<i32>(device, config, samples, position),
+        SampleFormat::I64 => build::<i64>(device, config, samples, position),
+        SampleFormat::U8 => build::<u8>(device, config, samples, position),
+        SampleFormat::U16 => build::<u16>(device, config, samples, position),
+        SampleFormat::U32 => build::<u32>(device, config, samples, position),
+        SampleFormat::U64 => build::<u64>(device, config, samples, position),
+        other => Err(format!("unsupported output format: {other:?}")),
+    }
 }
 
 fn build<T>(

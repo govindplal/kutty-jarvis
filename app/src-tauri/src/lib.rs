@@ -82,11 +82,12 @@ pub fn run() {
         .build(tauri::generate_context!())
         .expect("error while building tauri application")
         .run(|app, event| {
-            // Only the model servers this app started are stopped.
-            if let RunEvent::Exit = event
-                && let Some(servers) = app.try_state::<Arc<models::llama_server::LlamaServers>>()
-            {
-                servers.stop_all();
+            if let RunEvent::Exit = event {
+                tts::shutdown(app);
+                // Only the model servers this app started are stopped.
+                if let Some(servers) = app.try_state::<Arc<models::llama_server::LlamaServers>>() {
+                    servers.stop_all();
+                }
             }
         });
 }

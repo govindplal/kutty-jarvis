@@ -6,7 +6,8 @@
 use std::fs::{self, File};
 use std::io::{self, Read, Write};
 use std::path::{Component, Path, PathBuf};
-use std::time::Duration;
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use sha2::{Digest, Sha256};
 
@@ -87,16 +88,24 @@ pub fn install(root: &Path) -> Result<PiperPaths, String> {
     let agent = agent();
 
     if !paths.executable.is_file() {
-        let archive = root.join("engine.download");
+        let archive = unique_sibling(&root.join("engine"), "download");
         download_verified(&agent, engine, &archive)?;
-        let staging = root.join("engine.staging");
-        let _ = fs::remove_dir_all(&staging);
+        let staging = unique_sibling(&root.join("engine"), "staging");
         let extracted = extract_archive(&archive, &staging);
         let _ = fs::remove_file(&archive);
-        extracted?;
+        if let Err(error) = extracted {
+            let _ = fs::remove_dir_all(&staging);
+            return Err(error);
+        }
         let engine_dir = root.join("engine");
         let _ = fs::remove_dir_all(&engine_dir);
-        fs::rename(&staging, &engine_dir).map_err(|e| format!("could not install engine: {e}"))?;
+        if let Err(error) = fs::rename(&staging, &engine_dir) {
+            let _ = fs::remove_dir_all(&staging);
+            // Another installer may have put a complete engine there.
+            if !paths.executable.is_file() {
+                return Err(format!("could not install engine: {error}"));
+            }
+        }
     }
 
     let voices = root.join("voices");
@@ -108,7 +117,7 @@ pub fn install(root: &Path) -> Result<PiperPaths, String> {
         (&VOICE_MODEL, format!("{VOICE_NAME}.onnx")),
     ] {
         let dest = voices.join(&name);
-        if !dest.is_file() {
+        if !file_matches(&dest, asset.sha256) {
             download_verified(&agent, asset, &dest)?;
         }
     }
@@ -141,11 +150,14 @@ fn download_verified(agent: &ureq::Agent, asset: &Asset, dest: &Path) -> Result<
 /// Copies `reader` to `<dest>.part` and moves it to `dest` only when its
 /// SHA-256 equals `expected`.
 pub fn write_verified(mut reader: impl Read, expected: &str, dest: &Path) -> Result<(), String> {
-    let mut part = dest.as_os_str().to_owned();
-    part.push(".part");
-    let part = PathBuf::from(part);
+    let part = unique_sibling(dest, "part");
     let result = (|| {
-        let mut file = File::create(&part).map_err(|e| format!("could not write file: {e}"))?;
+        // Exclusive, so another process can never truncate this file.
+        let mut file = fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&part)
+            .map_err(|e| format!("could not write file: {e}"))?;
         let mut hasher = Sha256::new();
         let mut buffer = [0u8; 64 * 1024];
         loop {
@@ -167,12 +179,71 @@ pub fn write_verified(mut reader: impl Read, expected: &str, dest: &Path) -> Res
                 "checksum mismatch: expected {expected}, got {actual}"
             ));
         }
-        fs::rename(&part, dest).map_err(|e| format!("could not move file into place: {e}"))
+        match fs::rename(&part, dest) {
+            Ok(()) => Ok(()),
+            // Lost a race to another installer that finished first.
+            Err(_) if file_matches(dest, expected) => Ok(()),
+            Err(e) => Err(format!("could not move file into place: {e}")),
+        }
     })();
     if result.is_err() {
         let _ = fs::remove_file(&part);
     }
     result
+}
+
+/// `<dest>.<pid>-<nonce>.<ext>`: no two installers share a temp path.
+fn unique_sibling(dest: &Path, ext: &str) -> PathBuf {
+    static COUNTER: AtomicU64 = AtomicU64::new(0);
+    let nanos = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_or(0, |d| d.subsec_nanos());
+    let mut name = dest.as_os_str().to_owned();
+    name.push(format!(
+        ".{}-{}{nanos:x}.{ext}",
+        std::process::id(),
+        COUNTER.fetch_add(1, Ordering::Relaxed)
+    ));
+    PathBuf::from(name)
+}
+
+fn sha256_file(path: &Path) -> io::Result<String> {
+    let mut file = File::open(path)?;
+    let mut hasher = Sha256::new();
+    let mut buffer = [0u8; 64 * 1024];
+    loop {
+        let n = file.read(&mut buffer)?;
+        if n == 0 {
+            return Ok(hex(&hasher.finalize()));
+        }
+        hasher.update(&buffer[..n]);
+    }
+}
+
+fn file_matches(path: &Path, expected: &str) -> bool {
+    sha256_file(path).is_ok_and(|actual| actual.eq_ignore_ascii_case(expected))
+}
+
+/// The installed Piper, once its voice files are known to be the pinned
+/// ones. Hashing the ~63 MB model takes under a second, and the caller
+/// does it once per app run (the result is kept in the speech state). A
+/// voice file that fails the check is deleted so the next install replaces
+/// it. The engine executable is not hashed: it is verified as an archive
+/// before extraction.
+pub fn verified_install(root: &Path) -> Option<PiperPaths> {
+    let paths = PiperPaths::under(root);
+    if !paths.is_installed() {
+        return None;
+    }
+    let mut intact = true;
+    for (path, asset) in [(&paths.config, &VOICE_CONFIG), (&paths.model, &VOICE_MODEL)] {
+        if !file_matches(path, asset.sha256) {
+            eprintln!("piper voice file {} is damaged; removing", path.display());
+            let _ = fs::remove_file(path);
+            intact = false;
+        }
+    }
+    intact.then_some(paths)
 }
 
 fn hex(bytes: &[u8]) -> String {
@@ -269,6 +340,43 @@ mod tests {
         let error = write_verified(Cursor::new(b"hellp"), HELLO_SHA, &dest).unwrap_err();
         assert!(error.contains("checksum mismatch"), "{error}");
         assert_eq!(fs::read_dir(&dir).unwrap().count(), 0);
+    }
+
+    #[test]
+    fn concurrent_writers_use_separate_temp_files_and_both_succeed() {
+        let dir = temp_dir("race");
+        let dest = dir.join("hello.txt");
+        let handles: Vec<_> = (0..8)
+            .map(|_| {
+                let dest = dest.clone();
+                std::thread::spawn(move || write_verified(Cursor::new(b"hello"), HELLO_SHA, &dest))
+            })
+            .collect();
+        for handle in handles {
+            handle.join().unwrap().unwrap();
+        }
+        assert_eq!(fs::read(&dest).unwrap(), b"hello");
+        assert_eq!(fs::read_dir(&dir).unwrap().count(), 1);
+    }
+
+    #[test]
+    fn temp_names_are_unique() {
+        let dest = Path::new("a/hello.txt");
+        assert_ne!(unique_sibling(dest, "part"), unique_sibling(dest, "part"));
+    }
+
+    #[test]
+    fn a_damaged_voice_is_removed_and_not_trusted() {
+        let dir = temp_dir("verify");
+        let paths = PiperPaths::under(&dir);
+        for file in [&paths.executable, &paths.model, &paths.config] {
+            fs::create_dir_all(file.parent().unwrap()).unwrap();
+            fs::write(file, b"not the real thing").unwrap();
+        }
+        assert!(paths.is_installed());
+        assert_eq!(verified_install(&dir), None);
+        assert!(!paths.model.exists());
+        assert!(!paths.config.exists());
     }
 
     #[test]
