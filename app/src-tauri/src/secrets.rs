@@ -174,7 +174,7 @@ pub fn default_store() -> Arc<dyn KeyStore> {
 pub use fake::MemoryStore;
 
 #[cfg(test)]
-mod fake {
+pub(crate) mod fake {
     use std::collections::HashMap;
     use std::sync::Mutex;
 

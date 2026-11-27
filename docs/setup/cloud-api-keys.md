@@ -13,8 +13,12 @@ The buddy runs on local models by default and sends nothing off your machine (AD
 
 ## What leaves your machine
 
-With a cloud provider selected: the recorded question (OpenAI speech to text), the transcript, and the screenshot plus the list of on-screen UI elements (answering). Screenshots are still never stored by the app.
+With **Answering** set to a cloud provider, that provider receives your transcript, the screenshot, the title of the foreground window and the names of the on-screen UI elements, plus what you asked. With **Speech to text** set to OpenAI, OpenAI receives the recorded audio. The Models section says the same next to the selects. Screenshots are still never stored by the app.
+
+Provider error text is never shown in the app, since it could quote your key; you see a short message, at most with the provider's error code.
 
 ## Models and overrides
 
 Defaults: Anthropic `claude-haiku-5-5`, OpenAI chat `gpt-6-luna`, OpenAI transcription `gpt-transcribe`. To use others, edit `model-settings.json` in the app config folder (on Windows `%APPDATA%\dev.kuttyjarvis.app\`); its model fields hold the ids.
+
+Answers ask for low reasoning effort (OpenAI `reasoning_effort: "low"`, Anthropic `output_config.effort: "low"`) so spoken replies stay quick, with a 1024-token limit that leaves room for reasoning. If a model still runs out of room before writing text, the app says so instead of staying silent.

@@ -11,14 +11,20 @@ use base64::Engine;
 use base64::engine::general_purpose::STANDARD;
 use serde_json::{Value, json};
 
-use super::{Assistant, Question, SpeechToText, openai_compat, shrink_for_model};
+use super::{Assistant, Question, SpeechToText, shrink_for_model};
 use crate::assistant::prompt;
 use crate::secrets::KeyProvider;
 
 const ANTHROPIC_URL: &str = "https://api.anthropic.com";
 const OPENAI_URL: &str = "https://api.openai.com";
 const ANTHROPIC_VERSION: &str = "2023-06-01";
-const ANSWER_MAX_TOKENS: u32 = 300;
+/// Reasoning tokens count against the limit on both providers, so leave
+/// room beyond the short spoken answer.
+const ANSWER_MAX_TOKENS: u32 = 1024;
+/// gpt-6-luna defaults to `medium`, which is slow for spoken replies.
+const OPENAI_REASONING_EFFORT: &str = "low";
+/// Haiku 5.5 uses adaptive thinking at `medium` by default.
+const ANTHROPIC_EFFORT: &str = "low";
 const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
 const ANSWER_TIMEOUT: Duration = Duration::from_secs(60);
 const TRANSCRIBE_TIMEOUT: Duration = Duration::from_secs(60);
@@ -140,23 +146,28 @@ fn describe_status(provider: KeyProvider, status: u16, body: &str) -> String {
             "{label} says you are over a rate limit or out of credit (HTTP 429); wait a bit or check your plan"
         ),
         500..=599 => format!("{label} is having trouble right now (HTTP {status}); try again soon"),
-        _ => {
-            let detail = serde_json::from_str::<Value>(body)
-                .ok()
-                .and_then(|value| {
-                    value
-                        .pointer("/error/message")
-                        .and_then(Value::as_str)
-                        .map(str::to_string)
-                })
-                .unwrap_or_default();
-            if detail.is_empty() {
-                format!("{label} refused the request (HTTP {status})")
-            } else {
-                format!("{label} refused the request (HTTP {status}): {detail}")
-            }
-        }
+        _ => match error_code(body) {
+            Some(code) => format!("{label} refused the request (HTTP {status}, {code})"),
+            None => format!("{label} refused the request (HTTP {status})"),
+        },
     }
+}
+
+/// A short machine-style error type or code from an error body, if it looks
+/// like one. Provider free text is never passed on: it could echo the key.
+fn error_code(body: &str) -> Option<String> {
+    let value: Value = serde_json::from_str(body).ok()?;
+    ["/error/code", "/error/type"]
+        .iter()
+        .filter_map(|path| value.pointer(path).and_then(Value::as_str))
+        .find(|code| {
+            !code.is_empty()
+                && code.len() <= 40
+                && code
+                    .chars()
+                    .all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '-')
+        })
+        .map(str::to_string)
 }
 
 fn png_data_url(png: &[u8]) -> String {
@@ -179,6 +190,7 @@ pub fn anthropic_request(model: &str, question: &Question) -> Value {
     json!({
         "model": model,
         "max_tokens": ANSWER_MAX_TOKENS,
+        "output_config": { "effort": ANTHROPIC_EFFORT },
         "system": prompt::SYSTEM,
         "messages": [{ "role": "user", "content": content }],
     })
@@ -202,9 +214,48 @@ pub fn parse_anthropic(body: &str) -> Result<String, String> {
         .unwrap_or_default();
     let text = text.trim();
     if text.is_empty() {
+        if value.get("stop_reason").and_then(Value::as_str) == Some("max_tokens") {
+            return Err("Anthropic ran out of room before it wrote an answer; try again".into());
+        }
         return Err("Anthropic's reply had no text in it".into());
     }
     Ok(text.to_string())
+}
+
+/// Reads a chat-completions reply. Error bodies are never quoted, since a
+/// 2xx envelope could still echo the key.
+pub fn parse_openai_chat(body: &str) -> Result<String, String> {
+    let value: Value =
+        serde_json::from_str(body).map_err(|_| "OpenAI sent an unreadable reply".to_string())?;
+    if value.get("error").is_some_and(|error| !error.is_null()) {
+        return Err(match error_code(body) {
+            Some(code) => format!("OpenAI reported an error ({code})"),
+            None => "OpenAI reported an error".to_string(),
+        });
+    }
+    let choice = value.pointer("/choices/0");
+    let text = match choice.and_then(|c| c.pointer("/message/content")) {
+        Some(Value::String(text)) => text.trim().to_string(),
+        Some(Value::Array(parts)) => parts
+            .iter()
+            .filter_map(|part| part.get("text").and_then(Value::as_str))
+            .collect::<Vec<_>>()
+            .join("")
+            .trim()
+            .to_string(),
+        _ => String::new(),
+    };
+    if !text.is_empty() {
+        return Ok(text);
+    }
+    match choice
+        .and_then(|c| c.get("finish_reason"))
+        .and_then(Value::as_str)
+    {
+        Some("length") => Err("OpenAI ran out of room before it wrote an answer; try again".into()),
+        Some("content_filter") => Err("OpenAI declined to answer that".into()),
+        _ => Err("OpenAI's reply had no text in it".into()),
+    }
 }
 
 pub fn openai_chat_request(model: &str, question: &Question) -> Value {
@@ -219,6 +270,7 @@ pub fn openai_chat_request(model: &str, question: &Question) -> Value {
     json!({
         "model": model,
         "max_completion_tokens": ANSWER_MAX_TOKENS,
+        "reasoning_effort": OPENAI_REASONING_EFFORT,
         "messages": [
             { "role": "system", "content": prompt::SYSTEM },
             { "role": "user", "content": content },
@@ -292,7 +344,7 @@ impl Assistant for OpenAiAssistant {
             ],
             body.to_string().as_bytes(),
         )?;
-        openai_compat::parse_response(&reply)
+        parse_openai_chat(&reply).map_err(|error| self.client.redact(&error))
     }
 }
 
@@ -491,9 +543,10 @@ mod tests {
         let other = describe_status(
             KeyProvider::Anthropic,
             400,
-            r#"{"error":{"message":"bad model"}}"#,
+            r#"{"error":{"message":"bad model","type":"invalid_request_error"}}"#,
         );
-        assert!(other.contains("bad model"));
+        assert!(other.contains("HTTP 400") && other.contains("invalid_request_error"));
+        assert!(!other.contains("bad model"));
     }
 
     #[test]
@@ -579,5 +632,81 @@ mod tests {
         server.join().unwrap();
         // Nothing connected to the redirect target.
         assert!(!other_server.is_finished());
+    }
+
+    #[test]
+    fn answer_requests_set_effort_and_roomy_limits() {
+        let openai = openai_chat_request("m", &question());
+        assert_eq!(openai["reasoning_effort"], "low");
+        assert_eq!(openai["max_completion_tokens"], 1024);
+        assert!(openai.get("max_tokens").is_none());
+        let anthropic = anthropic_request("m", &question());
+        assert_eq!(anthropic["output_config"]["effort"], "low");
+        assert_eq!(anthropic["max_tokens"], 1024);
+    }
+
+    #[test]
+    fn length_stop_without_text_is_a_clear_error() {
+        let body = r#"{"choices":[{"finish_reason":"length","message":{"content":""}}]}"#;
+        assert!(
+            parse_openai_chat(body)
+                .unwrap_err()
+                .contains("ran out of room")
+        );
+        let body = r#"{"content":[],"stop_reason":"max_tokens"}"#;
+        assert!(
+            parse_anthropic(body)
+                .unwrap_err()
+                .contains("ran out of room")
+        );
+        let ok = r#"{"choices":[{"finish_reason":"length","message":{"content":" Hi "}}]}"#;
+        assert_eq!(parse_openai_chat(ok).unwrap(), "Hi");
+    }
+
+    #[test]
+    fn error_envelopes_never_quote_provider_text() {
+        let body = format!(
+            r#"{{"error":{{"message":"bad key {KEY}","type":"invalid_request_error","code":"has spaces {KEY}"}}}}"#
+        );
+        let error = parse_openai_chat(&body).unwrap_err();
+        assert_eq!(error, "OpenAI reported an error (invalid_request_error)");
+        for status in [400, 404, 422] {
+            let error = describe_status(KeyProvider::Openai, status, &body);
+            assert!(
+                !error.contains(KEY) && !error.contains("bad key"),
+                "{error}"
+            );
+        }
+    }
+
+    #[test]
+    fn a_2xx_error_envelope_over_http_is_redacted() {
+        let body = format!(r#"{{"error":{{"message":"bad key {KEY}"}}}}"#);
+        let (url, server) = mock(200, &body, None);
+        let assistant = OpenAiAssistant {
+            client: CloudClient::for_test(KeyProvider::Openai, KEY, url),
+            model: "m".into(),
+        };
+        let error = assistant.answer(&question()).unwrap_err();
+        server.join().unwrap();
+        assert!(
+            !error.contains(KEY) && !error.contains("bad key"),
+            "{error}"
+        );
+    }
+
+    #[test]
+    fn a_400_over_http_does_not_leak_the_key() {
+        let body =
+            format!(r#"{{"error":{{"message":"echo {KEY}","type":"invalid_request_error"}}}}"#);
+        let (url, server) = mock(400, &body, None);
+        let assistant = AnthropicAssistant {
+            client: CloudClient::for_test(KeyProvider::Anthropic, KEY, url),
+            model: "m".into(),
+        };
+        let error = assistant.answer(&question()).unwrap_err();
+        server.join().unwrap();
+        assert!(error.contains("HTTP 400"), "{error}");
+        assert!(!error.contains(KEY) && !error.contains("echo"), "{error}");
     }
 }

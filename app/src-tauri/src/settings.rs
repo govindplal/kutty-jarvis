@@ -1,7 +1,10 @@
 //! Non-secret model choices, kept as a small JSON file in the app config
 //! folder (ADR 0015). Keys are not stored here.
 
+use std::io::Write;
 use std::path::Path;
+use std::sync::Mutex;
+use std::sync::atomic::{AtomicU64, Ordering};
 
 use serde::{Deserialize, Serialize};
 
@@ -92,18 +95,63 @@ pub fn load(dir: &Path) -> ModelSettings {
     }
 }
 
+/// Changes to individual choices; absent fields are left as they are.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
+pub struct SettingsPatch {
+    pub speech_to_text: Option<SttProvider>,
+    pub assistant: Option<AnswerProvider>,
+}
+
+/// Serializes read-modify-write cycles so concurrent saves cannot undo each
+/// other.
+static WRITE_LOCK: Mutex<()> = Mutex::new(());
+static TEMP_COUNTER: AtomicU64 = AtomicU64::new(0);
+
+fn lock() -> std::sync::MutexGuard<'static, ()> {
+    WRITE_LOCK
+        .lock()
+        .unwrap_or_else(|poisoned| poisoned.into_inner())
+}
+
 /// Validates and writes the settings atomically (temp file, then rename).
 pub fn save(dir: &Path, settings: ModelSettings) -> Result<ModelSettings, String> {
+    let _guard = lock();
+    write(dir, settings)
+}
+
+/// Applies a patch to the settings currently on disk.
+pub fn patch(dir: &Path, patch: SettingsPatch) -> Result<ModelSettings, String> {
+    let _guard = lock();
+    let mut settings = load(dir);
+    if let Some(stt) = patch.speech_to_text {
+        settings.speech_to_text = stt;
+    }
+    if let Some(assistant) = patch.assistant {
+        settings.assistant = assistant;
+    }
+    write(dir, settings)
+}
+
+fn write(dir: &Path, settings: ModelSettings) -> Result<ModelSettings, String> {
     settings.validate()?;
     let settings = settings.trimmed();
     std::fs::create_dir_all(dir)
         .map_err(|error| format!("could not create the settings folder: {error}"))?;
     let json = serde_json::to_string_pretty(&settings)
         .map_err(|error| format!("could not write settings: {error}"))?;
-    let temp = dir.join(format!("{FILE_NAME}.tmp"));
-    std::fs::write(&temp, json)
-        .and_then(|()| std::fs::rename(&temp, dir.join(FILE_NAME)))
-        .map_err(|error| format!("could not save settings: {error}"))?;
+    let nonce = TEMP_COUNTER.fetch_add(1, Ordering::Relaxed);
+    let temp = dir.join(format!("{FILE_NAME}.{}.{nonce}.tmp", std::process::id()));
+    let result = std::fs::OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(&temp)
+        .and_then(|mut file| file.write_all(json.as_bytes()))
+        .and_then(|()| std::fs::rename(&temp, dir.join(FILE_NAME)));
+    if let Err(error) = result {
+        let _ = std::fs::remove_file(&temp);
+        return Err(format!("could not save settings: {error}"));
+    }
     Ok(settings)
 }
 
@@ -137,7 +185,7 @@ mod tests {
         let saved = save(&dir, settings).unwrap();
         assert_eq!(saved.models.anthropic, "claude-custom");
         assert_eq!(load(&dir), saved);
-        assert!(!dir.join("model-settings.json.tmp").exists());
+        assert_eq!(std::fs::read_dir(&dir).unwrap().count(), 1);
         let _ = std::fs::remove_dir_all(&dir);
     }
 
@@ -163,5 +211,72 @@ mod tests {
             assert!(save(&dir, settings).is_err(), "{bad}");
         }
         assert!(!dir.exists());
+    }
+
+    #[test]
+    fn patches_change_one_field_of_the_current_file() {
+        let dir = temp_dir("patch");
+        let both = SettingsPatch {
+            speech_to_text: Some(SttProvider::Openai),
+            assistant: Some(AnswerProvider::Anthropic),
+        };
+        patch(&dir, both).unwrap();
+        let saved = patch(
+            &dir,
+            SettingsPatch {
+                speech_to_text: Some(SttProvider::Local),
+                ..Default::default()
+            },
+        )
+        .unwrap();
+        assert_eq!(saved.speech_to_text, SttProvider::Local);
+        assert_eq!(saved.assistant, AnswerProvider::Anthropic);
+        let saved = patch(
+            &dir,
+            SettingsPatch {
+                assistant: Some(AnswerProvider::Local),
+                ..Default::default()
+            },
+        )
+        .unwrap();
+        assert_eq!(saved, ModelSettings::default());
+        assert_eq!(load(&dir), ModelSettings::default());
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn concurrent_writes_all_succeed_and_leave_no_temp_files() {
+        let dir = temp_dir("concurrent");
+        let cloud = ModelSettings {
+            speech_to_text: SttProvider::Openai,
+            assistant: AnswerProvider::Openai,
+            ..Default::default()
+        };
+        save(&dir, cloud).unwrap();
+        let handles: Vec<_> = (0..16)
+            .map(|i| {
+                let dir = dir.clone();
+                std::thread::spawn(move || {
+                    let change = if i % 2 == 0 {
+                        SettingsPatch {
+                            speech_to_text: Some(SttProvider::Local),
+                            ..Default::default()
+                        }
+                    } else {
+                        SettingsPatch {
+                            assistant: Some(AnswerProvider::Local),
+                            ..Default::default()
+                        }
+                    };
+                    patch(&dir, change).unwrap();
+                })
+            })
+            .collect();
+        for handle in handles {
+            handle.join().unwrap();
+        }
+        assert_eq!(load(&dir), ModelSettings::default());
+        assert_eq!(std::fs::read_dir(&dir).unwrap().count(), 1);
+        let _ = std::fs::remove_dir_all(&dir);
     }
 }

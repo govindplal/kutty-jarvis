@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import {
   PROVIDER_LABEL,
@@ -6,7 +6,9 @@ import {
   privacyNotes,
   type AnswerProvider,
   type KeyProvider,
+  type KeyStatus,
   type KeyStatuses,
+  type SettingsPatch,
   type ModelSettings as Settings,
   type SttProvider,
 } from "../lib/models";
@@ -29,20 +31,35 @@ export function ModelSettings() {
       .catch((e) => setError(message(e)));
   }, []);
 
-  async function update(next: Settings) {
+  // One change at a time, in the order made, each patching only its own
+  // field, so quick successive changes can never restore an older value.
+  const queue = useRef<Promise<unknown>>(Promise.resolve());
+  function update(patch: SettingsPatch) {
     setError("");
-    try {
-      setSettings(await invoke<Settings>("set_model_settings", { settings: next }));
-    } catch (e) {
-      setError(message(e));
-    }
+    setSettings((current) => (current ? { ...current, ...patch } : current));
+    queue.current = queue.current.then(async () => {
+      try {
+        setSettings(await invoke<Settings>("patch_model_settings", { patch }));
+      } catch (e) {
+        setError(message(e));
+        invoke<Settings>("get_model_settings")
+          .then((value) => value && setSettings(value))
+          .catch(() => {});
+      }
+    });
+  }
+
+  const noKey: KeyStatus = { configured: false };
+  function setStatus(provider: KeyProvider, status: KeyStatus) {
+    setKeys((current) => ({ anthropic: noKey, openai: noKey, ...current, [provider]: status }));
   }
 
   async function saveKey(provider: KeyProvider) {
     setError("");
     try {
-      setKeys(await invoke<KeyStatuses>("set_api_key", { provider, key: drafts[provider] }));
+      const status = await invoke<KeyStatus>("set_api_key", { provider, key: drafts[provider] });
       setDrafts((current) => ({ ...current, [provider]: "" }));
+      if (status) setStatus(provider, status);
     } catch (e) {
       setError(message(e));
     }
@@ -51,7 +68,8 @@ export function ModelSettings() {
   async function clearKey(provider: KeyProvider) {
     setError("");
     try {
-      setKeys(await invoke<KeyStatuses>("clear_api_key", { provider }));
+      const status = await invoke<KeyStatus>("clear_api_key", { provider });
+      if (status) setStatus(provider, status);
     } catch (e) {
       setError(message(e));
     }
@@ -70,7 +88,7 @@ export function ModelSettings() {
           Speech to text{" "}
           <select
             value={settings.speechToText}
-            onChange={(e) => update({ ...settings, speechToText: e.target.value as SttProvider })}
+            onChange={(e) => update({ speechToText: e.target.value as SttProvider })}
           >
             <option value="local">Local</option>
             <option value="openai">OpenAI</option>
@@ -80,7 +98,7 @@ export function ModelSettings() {
           Answering{" "}
           <select
             value={settings.assistant}
-            onChange={(e) => update({ ...settings, assistant: e.target.value as AnswerProvider })}
+            onChange={(e) => update({ assistant: e.target.value as AnswerProvider })}
           >
             <option value="local">Local</option>
             <option value="anthropic">Anthropic</option>
