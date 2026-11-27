@@ -32,7 +32,7 @@ pub fn run() {
                 let _ = window.hide();
             }
         })
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![greet, hotkey::push_to_talk_status])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
