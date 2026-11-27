@@ -18,7 +18,7 @@ The owner wants the repository to be run like a professional team: small reviewa
 ## Decision
 
 - `main` is protected: pull request required, no force pushes, no deletions, linear history, conversations resolved.
-- Short-lived branches named `<type>/<kebab-description>`; squash-merge; branch deleted on merge.
+- Short-lived branches named `<type>/<kebab-description>`; squash-merge (superseded by [ADR 0011](0011-rebase-merge-instead-of-squash.md): rebase-merge); branch deleted on merge.
 - Conventional Commits enforced locally by commitlint through a husky hook (header at most 72 characters, body lines at most 72) and a pre-push hook that validates branch names.
 - Each important step is its own commit with a specific message; one logical change per commit.
 

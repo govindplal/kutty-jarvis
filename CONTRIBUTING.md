@@ -28,4 +28,4 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/), enforced
 
 - One feature or fix per PR, kept small.
 - Tests and lint must pass before review.
-- Squash-merge with a Conventional Commit title.
+- Rebase-merge (no squash). Every commit on the branch lands on `main`, so each must be a clean Conventional Commit. See [ADR 0011](docs/adr/0011-rebase-merge-instead-of-squash.md).

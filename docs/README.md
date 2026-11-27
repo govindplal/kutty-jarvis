@@ -31,6 +31,7 @@ Everything we learn and decide is written down here. The goal is that a new cont
 - [0008 Tray app with a Ctrl+Alt+Space push-to-talk hotkey](adr/0008-tray-app-and-push-to-talk-hotkey.md)
 - [0009 Capture the screen only on hotkey press, in memory only](adr/0009-capture-screen-on-hotkey-only.md)
 - [0010 Record the microphone only while the key is held](adr/0010-record-microphone-only-while-key-held.md)
+- [0011 Rebase-merge instead of squash](adr/0011-rebase-merge-instead-of-squash.md)
 
 ### Findings
 - [0001 Vision grounding with LFM2.5-VL on CPU](findings/0001-vision-grounding-lfm25-vl-cpu.md)
