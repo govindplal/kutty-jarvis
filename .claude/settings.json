@@ -20,5 +20,9 @@
       "Bash(git push --force:*)",
       "Bash(rm -rf:*)"
     ]
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
   }
 }
