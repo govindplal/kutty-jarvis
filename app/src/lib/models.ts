@@ -2,6 +2,8 @@ export type SttProvider = "local" | "openai";
 export type AnswerProvider = "local" | "anthropic" | "openai";
 export type KeyProvider = "anthropic" | "openai";
 
+export type SettingsPatch = { speechToText?: SttProvider; assistant?: AnswerProvider };
+
 export type ModelSettings = {
   speechToText: SttProvider;
   assistant: AnswerProvider;
@@ -21,11 +23,11 @@ export function privacyNotes(settings: ModelSettings): string[] {
   const notes: string[] = [];
   if (settings.assistant !== "local") {
     notes.push(
-      `Your question, transcript and screenshot are sent to ${PROVIDER_LABEL[settings.assistant]} when selected.`,
+      `Your question, transcript, screenshot, the foreground window title and the names of on-screen UI elements are sent to ${PROVIDER_LABEL[settings.assistant]} when selected.`,
     );
   }
   if (settings.speechToText === "openai") {
-    notes.push("Your recorded voice is sent to OpenAI for transcription when selected.");
+    notes.push("Your recorded audio is sent to OpenAI for transcription when selected.");
   }
   return notes;
 }
