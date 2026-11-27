@@ -51,8 +51,35 @@ pub struct Turn {
     screenshot: Receiver<Option<Vec<u8>>>,
 }
 
-#[derive(Default)]
-pub struct PendingTurn(Mutex<Option<Turn>>);
+/// Holds the turn started by the latest key press until its release takes it.
+/// The release moves the turn into the finalize worker, so a later press can
+/// never hand its context to an earlier question.
+pub struct TurnSlot<T>(Mutex<Option<T>>);
+
+impl<T> Default for TurnSlot<T> {
+    fn default() -> Self {
+        Self(Mutex::new(None))
+    }
+}
+
+impl<T> TurnSlot<T> {
+    fn begin(&self, turn: T) {
+        *self.0.lock().unwrap_or_else(|p| p.into_inner()) = Some(turn);
+    }
+
+    fn take(&self) -> Option<T> {
+        self.0.lock().unwrap_or_else(|p| p.into_inner()).take()
+    }
+}
+
+pub type PendingTurn = TurnSlot<Turn>;
+
+/// Key released: takes the turn started by the matching press. Call it
+/// synchronously on release, together with taking the recorder.
+pub fn take_turn(app: &AppHandle) -> Option<Turn> {
+    app.try_state::<PendingTurn>()
+        .and_then(|pending| pending.take())
+}
 
 /// Hands a finished capture (or its failure) to the question in progress.
 pub type ScreenshotSender = Sender<Option<Vec<u8>>>;
@@ -67,10 +94,7 @@ pub fn begin_turn(app: &AppHandle) -> ScreenshotSender {
     });
     let (screenshot_tx, screenshot) = mpsc::channel();
     if let Some(pending) = app.try_state::<PendingTurn>() {
-        *pending
-            .0
-            .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner()) = Some(Turn {
+        pending.begin(Turn {
             elements,
             screenshot,
         });
@@ -131,16 +155,7 @@ fn fail(app: &AppHandle, stage: Stage, message: impl Into<String>) {
 
 /// Key released and the recording is finished: answer it. Blocks, so call it
 /// from a background thread.
-pub fn answer(app: &AppHandle, wav: Vec<u8>, has_audio: bool) {
-    let Some(turn) = app.try_state::<PendingTurn>().and_then(|pending| {
-        pending
-            .0
-            .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner())
-            .take()
-    }) else {
-        return;
-    };
+pub fn answer(app: &AppHandle, turn: Turn, wav: Vec<u8>, has_audio: bool) {
     if !has_audio {
         fail(
             app,
@@ -176,6 +191,9 @@ pub fn answer(app: &AppHandle, wav: Vec<u8>, has_audio: bool) {
         eprintln!("assistant: no UI element list ({message}); answering without pointing");
     }
     let screenshot_png = turn.screenshot.recv_timeout(SCREENSHOT_WAIT).ok().flatten();
+    if screenshot_png.is_none() {
+        eprintln!("assistant: no screenshot; the model is told it cannot see the screen");
+    }
 
     let input = Input {
         wav,
@@ -204,27 +222,56 @@ pub fn answer(app: &AppHandle, wav: Vec<u8>, has_audio: bool) {
 }
 
 fn deliver(app: &AppHandle, reply: Reply) {
+    // Report a pointed element only when the overlay really showed it.
+    let pointed_element = reply.target.and_then(|target| {
+        match overlay::point_at(app, target.rect, DEFAULT_HOLD_MS) {
+            Ok(_) => Some(PointedElement {
+                id: target.id,
+                role: target.role,
+                name: target.name,
+            }),
+            Err(error) => {
+                eprintln!(
+                    "assistant: could not point at element {}: {error}",
+                    target.id
+                );
+                None
+            }
+        }
+    });
     emit(
         app,
         REPLIED_EVENT,
         Replied {
             transcript: reply.transcript,
             reply: reply.text,
-            pointed_element: reply.target.as_ref().map(|target| PointedElement {
-                id: target.id,
-                role: target.role.clone(),
-                name: target.name.clone(),
-            }),
+            pointed_element,
             transcribe_ms: reply.transcribe_time.as_millis() as u64,
             answer_ms: reply.answer_time.as_millis() as u64,
         },
     );
-    if let Some(target) = reply.target
-        && let Err(error) = overlay::point_at(app, target.rect, DEFAULT_HOLD_MS)
-    {
-        eprintln!(
-            "assistant: could not point at element {}: {error}",
-            target.id
-        );
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_delayed_finalize_keeps_the_context_of_its_own_press() {
+        let slot = TurnSlot::<&str>::default();
+        slot.begin("screen 1");
+        // Release 1 takes its turn synchronously, then hands it to a worker
+        // that has not run yet.
+        let first = slot.take();
+        // A rapid second press starts its own turn before that worker runs.
+        slot.begin("screen 2");
+        assert_eq!(first, Some("screen 1"));
+        assert_eq!(slot.take(), Some("screen 2"));
+        assert_eq!(slot.take(), None);
+    }
+
+    #[test]
+    fn a_release_without_a_press_has_no_turn() {
+        assert_eq!(TurnSlot::<u8>::default().take(), None);
     }
 }

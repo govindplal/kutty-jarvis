@@ -117,12 +117,10 @@ pub fn parse_response(body: &str) -> Result<String, String> {
 }
 
 fn post(endpoint: &Endpoint, body: &Value) -> Result<String, String> {
-    let config = ureq::Agent::config_builder()
-        .timeout_connect(Some(CONNECT_TIMEOUT))
-        .timeout_global(Some(endpoint.timeout))
-        .http_status_as_error(false)
-        .build();
-    let agent = ureq::Agent::new_with_config(config);
+    // Every endpoint today is a local server (ADR 0012); a cloud provider
+    // needs its own, explicit path rather than a relaxed check here.
+    super::require_loopback(&endpoint.base_url)?;
+    let agent = super::local_agent(Some(CONNECT_TIMEOUT), endpoint.timeout);
     let url = endpoint.completions_url();
     let mut request = agent.post(&url).header("content-type", "application/json");
     if let Some(key) = &endpoint.api_key {

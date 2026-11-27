@@ -205,6 +205,9 @@ fn start_recording(app: &AppHandle) {
 
 /// Closes the microphone and processes the audio off the hotkey thread.
 fn finish_recording_in_background(app: AppHandle) {
+    // Take the recorder and its turn together, on the hotkey thread, so a
+    // rapid second press cannot swap the turn before the worker has it.
+    let turn = assistant::runtime::take_turn(&app);
     let recorder = app.try_state::<ActiveRecorder>().and_then(|active| {
         active
             .0
@@ -212,7 +215,7 @@ fn finish_recording_in_background(app: AppHandle) {
             .unwrap_or_else(|poisoned| poisoned.into_inner())
             .take()
     });
-    let Some(recorder) = recorder else {
+    let (Some(recorder), Some(turn)) = (recorder, turn) else {
         return;
     };
     std::thread::spawn(move || match recorder.finish() {
@@ -234,7 +237,7 @@ fn finish_recording_in_background(app: AppHandle) {
                     .unwrap_or_else(|poisoned| poisoned.into_inner()) = Some(recording);
             }
             emit(&app, RECORDING_FINISHED_EVENT, payload);
-            assistant::runtime::answer(&app, question_wav, has_audio);
+            assistant::runtime::answer(&app, turn, question_wav, has_audio);
         }
         Err(message) => emit(&app, RECORDING_FAILED_EVENT, message),
     });

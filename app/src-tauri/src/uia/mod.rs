@@ -585,7 +585,7 @@ pub fn render_line(element: &Element) -> String {
 
 /// Name as it appears between quotes: cleaned, double quotes swapped for
 /// single ones, cut to [`PROMPT_NAME_CHARS`] characters.
-fn prompt_name(name: &str) -> String {
+pub fn prompt_name(name: &str) -> String {
     let cleaned = clean_name(name).replace('"', "'");
     if cleaned.chars().count() <= PROMPT_NAME_CHARS {
         return cleaned;
