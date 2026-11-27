@@ -12,7 +12,7 @@ use tauri_plugin_global_shortcut::{
     Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutEvent, ShortcutState,
 };
 
-use crate::audio::{ActiveRecorder, LatestRecording, Recorder};
+use crate::audio::{self, ActiveRecorder, LatestRecording, Recorder};
 use crate::capture::{self, LatestScreenshot};
 use crate::push_to_talk::{PushToTalk, PushToTalkState};
 
@@ -30,6 +30,9 @@ struct RecordingFinished {
     held_ms: u64,
     ready_ms: u64,
     first_sample_ms: Option<u64>,
+    /// Debug builds only: where the WAV was exported for speech testing.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    debug_wav_path: Option<String>,
 }
 
 #[derive(Serialize, Clone)]
@@ -120,6 +123,7 @@ fn finish_recording_in_background(app: AppHandle) {
                 held_ms: recording.held_ms,
                 ready_ms: recording.ready_ms,
                 first_sample_ms: recording.first_sample_ms,
+                debug_wav_path: audio::export_debug_wav(&recording.wav),
             };
             if let Some(latest) = app.try_state::<LatestRecording>() {
                 *latest
