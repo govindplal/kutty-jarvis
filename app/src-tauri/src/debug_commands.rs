@@ -65,8 +65,8 @@ pub fn debug_speech_available() -> bool {
 
 /// Speaks `text` through the normal engine choice (Piper, else SAPI).
 #[tauri::command]
-pub fn debug_speak(app: AppHandle, text: String) {
-    crate::tts::speak(&app, text);
+pub fn debug_speak(app: AppHandle, text: String) -> u64 {
+    crate::tts::speak(&app, text)
 }
 
 #[tauri::command]

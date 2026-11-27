@@ -4,8 +4,9 @@
 //! Piper (a separate process, downloaded on first use) is the default engine.
 //! Until it is installed, Windows SAPI speaks instead. See ADR 0014.
 //!
-//! Events, all with an `engine` field (`"piper"` or `"sapi"`):
-//! - `speech-started`: audio is about to play; `fallback` says why SAPI was
+//! Events, all with the utterance `id` returned by [`speak`] and an `engine`
+//! field (`"piper"` or `"sapi"`):
+//! - `speech-started`: audio is playing; `fallback` says why SAPI was
 //!   used instead of Piper.
 //! - `speech-finished`: `interrupted` is true when [`stop`] or a newer
 //!   [`speak`] cut it short.
@@ -18,33 +19,44 @@ mod playback;
 mod sapi;
 
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard};
+use std::time::{Duration, Instant};
 
 use serde::Serialize;
 use tauri::{AppHandle, Emitter, Manager};
 
 use assets::PiperPaths;
 use piper::PiperEngine;
+use playback::PlayError;
 
 /// An engine that turns text into a WAV; playback is shared. Implement this
 /// for a cloud provider to make it interchangeable with Piper.
 pub trait TextToSpeech: Send + Sync {
     fn name(&self) -> &'static str;
-    fn synthesize(&self, text: &str) -> Result<Vec<u8>, String>;
+    fn synthesize(&self, text: &str, cancel: &Cancel) -> Result<Vec<u8>, String>;
 }
 
-/// Raised to interrupt one utterance.
-#[derive(Default)]
-pub struct Cancel(AtomicBool);
+/// Raised to interrupt one utterance; `id` tags that utterance's events.
+pub struct Cancel {
+    pub id: u64,
+    flag: AtomicBool,
+}
 
 impl Cancel {
+    pub fn new(id: u64) -> Self {
+        Self {
+            id,
+            flag: AtomicBool::new(false),
+        }
+    }
+
     pub fn cancel(&self) {
-        self.0.store(true, Ordering::SeqCst);
+        self.flag.store(true, Ordering::SeqCst);
     }
 
     pub fn is_cancelled(&self) -> bool {
-        self.0.load(Ordering::SeqCst)
+        self.flag.load(Ordering::SeqCst)
     }
 }
 
@@ -60,12 +72,14 @@ fn lock<T>(mutex: &Mutex<T>) -> MutexGuard<'_, T> {
 pub struct Controller {
     current: Mutex<Option<Arc<Cancel>>>,
     output: Mutex<()>,
+    last_id: AtomicU64,
 }
 
 impl Controller {
     /// Registers a new utterance, cancelling the previous one.
     pub fn begin(&self) -> Arc<Cancel> {
-        let next = Arc::new(Cancel::default());
+        let id = self.last_id.fetch_add(1, Ordering::SeqCst) + 1;
+        let next = Arc::new(Cancel::new(id));
         if let Some(previous) = lock(&self.current).replace(Arc::clone(&next)) {
             previous.cancel();
         }
@@ -140,6 +154,7 @@ pub struct Speech {
     piper: Mutex<PiperState>,
     root: PathBuf,
     download_allowed: bool,
+    children: AtomicUsize,
 }
 
 impl Speech {
@@ -149,6 +164,7 @@ impl Speech {
             piper: Mutex::new(PiperState::NotChecked),
             root: assets::piper_root(&app_local_data),
             download_allowed,
+            children: AtomicUsize::new(0),
         }
     }
 }
@@ -156,6 +172,7 @@ impl Speech {
 #[derive(Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 struct SpeechEvent<'a> {
+    id: u64,
     engine: &'a str,
     #[serde(skip_serializing_if = "Option::is_none")]
     fallback: Option<&'a str>,
@@ -163,6 +180,18 @@ struct SpeechEvent<'a> {
     interrupted: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     error: Option<&'a str>,
+}
+
+impl<'a> SpeechEvent<'a> {
+    fn new(id: u64, engine: &'a str) -> Self {
+        Self {
+            id,
+            engine,
+            fallback: None,
+            interrupted: None,
+            error: None,
+        }
+    }
 }
 
 #[derive(Serialize, Clone)]
@@ -181,12 +210,15 @@ pub fn init(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-/// Speaks `text` without blocking, replacing any speech in progress.
-pub fn speak(app: &AppHandle, text: String) {
+/// Speaks `text` without blocking, replacing any speech in progress. Returns
+/// the utterance id carried by every `speech-*` event for it.
+pub fn speak(app: &AppHandle, text: String) -> u64 {
     let speech = app.state::<Speech>();
     let cancel = speech.controller.begin();
+    let id = cancel.id;
     let app = app.clone();
     std::thread::spawn(move || run_utterance(&app, &text, &cancel));
+    id
 }
 
 /// Cuts the current speech off (barge-in). Does nothing when silent.
@@ -194,94 +226,125 @@ pub fn stop(app: &AppHandle) {
     app.state::<Speech>().controller.stop();
 }
 
+/// Cancels speech and waits briefly for Piper to be killed and reaped, so no
+/// child outlives the app.
+pub fn shutdown(app: &AppHandle) {
+    let speech = app.state::<Speech>();
+    speech.controller.stop();
+    let deadline = Instant::now() + Duration::from_secs(2);
+    while speech.children.load(Ordering::SeqCst) > 0 && Instant::now() < deadline {
+        std::thread::sleep(Duration::from_millis(10));
+    }
+}
+
+/// Counts running Piper processes so [`shutdown`] can wait for them.
+struct ChildCount<'a>(&'a AtomicUsize);
+
+impl<'a> ChildCount<'a> {
+    fn new(counter: &'a AtomicUsize) -> Self {
+        counter.fetch_add(1, Ordering::SeqCst);
+        Self(counter)
+    }
+}
+
+impl Drop for ChildCount<'_> {
+    fn drop(&mut self) {
+        self.0.fetch_sub(1, Ordering::SeqCst);
+    }
+}
+
 fn run_utterance(app: &AppHandle, text: &str, cancel: &Arc<Cancel>) {
     let speech = app.state::<Speech>();
     let (choice, start_download) = lock(&speech.piper).choose(
-        || {
-            let paths = PiperPaths::under(&speech.root);
-            paths.is_installed().then_some(paths)
-        },
+        || assets::verified_install(&speech.root),
         speech.download_allowed,
     );
     if start_download {
         start_piper_download(app);
     }
 
-    let mut fallback = None;
-    let choice = match choice {
+    let reason = match choice {
         Choice::Piper(paths) => {
             let engine = PiperEngine::new(paths);
             // Synthesis happens before taking the output so a cancelled
             // utterance never holds up the next one.
-            match engine.synthesize(text) {
-                Ok(wav) => {
-                    if !cancel.is_cancelled() {
-                        play(app, &speech, cancel, engine.name(), None, || {
-                            playback::play_wav(&wav, cancel)
-                        });
-                    }
+            let synthesized = {
+                let _count = ChildCount::new(&speech.children);
+                engine.synthesize(text, cancel)
+            };
+            match synthesized {
+                _ if cancel.is_cancelled() => {
+                    emit_interrupted(app, cancel.id, engine.name());
                     return;
                 }
-                Err(error) => {
-                    fallback = Some(format!("piper failed: {error}"));
-                    Choice::Sapi(error)
+                Ok(wav) => {
+                    match play(app, &speech, cancel, engine.name(), None, |started| {
+                        playback::play_wav(&wav, cancel, started)
+                    }) {
+                        Some(setup_error) => format!("piper playback failed: {setup_error}"),
+                        None => return,
+                    }
                 }
+                Err(error) => format!("piper failed: {error}"),
             }
         }
-        sapi => sapi,
+        Choice::Sapi(reason) => reason,
     };
-    if let Choice::Sapi(reason) = choice {
-        let reason = fallback.unwrap_or(reason);
-        play(app, &speech, cancel, "sapi", Some(&reason), || {
-            sapi::speak(text, cancel)
-        });
-    }
+    play(app, &speech, cancel, "sapi", Some(&reason), |started| {
+        started();
+        sapi::speak(text, cancel).map_err(PlayError::Playing)
+    });
 }
 
+fn emit_interrupted(app: &AppHandle, id: u64, engine: &str) {
+    let mut event = SpeechEvent::new(id, engine);
+    event.interrupted = Some(true);
+    let _ = app.emit("speech-finished", event);
+}
+
+/// Plays with exclusive use of the output and emits the events for it, the
+/// terminal one before the output is released so a newer utterance's events
+/// can never be followed by this one's. Returns the reason when playback
+/// could not be set up at all (nothing was emitted then), so the caller can
+/// try another engine.
 fn play(
     app: &AppHandle,
     speech: &Speech,
     cancel: &Cancel,
     engine: &str,
     fallback: Option<&str>,
-    work: impl FnOnce() -> Result<(), String>,
-) {
+    work: impl FnOnce(&dyn Fn()) -> Result<(), PlayError>,
+) -> Option<String> {
+    let id = cancel.id;
     let outcome = speech.controller.run(cancel, || {
-        let _ = app.emit(
-            "speech-started",
-            SpeechEvent {
-                engine,
-                fallback,
-                interrupted: None,
-                error: None,
-            },
-        );
-        work()
+        let started = || {
+            let mut event = SpeechEvent::new(id, engine);
+            event.fallback = fallback;
+            let _ = app.emit("speech-started", event);
+        };
+        match work(&started) {
+            Ok(()) => {
+                let mut event = SpeechEvent::new(id, engine);
+                event.interrupted = Some(cancel.is_cancelled());
+                let _ = app.emit("speech-finished", event);
+                None
+            }
+            Err(PlayError::Setup(reason)) if engine == "piper" => Some(reason),
+            Err(error) => {
+                let error = error.to_string();
+                let mut event = SpeechEvent::new(id, engine);
+                event.error = Some(&error);
+                let _ = app.emit("speech-failed", event);
+                None
+            }
+        }
     });
     match outcome {
-        Some(Ok(())) => {
-            let _ = app.emit(
-                "speech-finished",
-                SpeechEvent {
-                    engine,
-                    fallback: None,
-                    interrupted: Some(cancel.is_cancelled()),
-                    error: None,
-                },
-            );
+        Some(setup_error) => setup_error,
+        None => {
+            emit_interrupted(app, id, engine);
+            None
         }
-        Some(Err(error)) => {
-            let _ = app.emit(
-                "speech-failed",
-                SpeechEvent {
-                    engine,
-                    fallback: None,
-                    interrupted: None,
-                    error: Some(&error),
-                },
-            );
-        }
-        None => {}
     }
 }
 
@@ -433,16 +496,20 @@ mod tests {
 
     #[test]
     fn events_serialise_in_camel_case_without_empty_fields() {
-        let json = serde_json::to_value(SpeechEvent {
-            engine: "piper",
-            fallback: None,
-            interrupted: Some(true),
-            error: None,
-        })
-        .unwrap();
+        let mut event = SpeechEvent::new(7, "piper");
+        event.interrupted = Some(true);
+        let json = serde_json::to_value(event).unwrap();
         assert_eq!(
             json,
-            serde_json::json!({"engine": "piper", "interrupted": true})
+            serde_json::json!({"id": 7, "engine": "piper", "interrupted": true})
         );
+    }
+
+    #[test]
+    fn each_utterance_gets_a_higher_id() {
+        let controller = Controller::default();
+        let first = controller.begin();
+        let second = controller.begin();
+        assert!(second.id > first.id);
     }
 }
