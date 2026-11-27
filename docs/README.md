@@ -37,9 +37,11 @@ Everything we learn and decide is written down here. The goal is that a new cont
 - [0002 Local speech recognition and synthesis on CPU](findings/0002-local-speech-on-cpu.md)
 - [0003 Smaller and newer vision models on CPU](findings/0003-small-vision-models-on-cpu.md) (partly invalid, see the finding)
 - [0004 Recording start-up gap and fix](findings/0004-recording-start-latency.md)
+- [0005 Real-microphone speech recognition](findings/0005-real-microphone-speech-recognition.md) (pending owner recording)
 
 ### Research
 - [0001 HeyClicky and the open-source landscape](research/0001-heyclicky-and-open-source-landscape.md)
 
 ### Devlog
 - [2026-11-20](devlog/2026-11-20.md)
+- [2026-11-27](devlog/2026-11-27.md)

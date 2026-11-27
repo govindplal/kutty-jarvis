@@ -2,7 +2,9 @@
 //!
 //! The stream is open only between a key press and release. Captured samples
 //! are converted to mono 16 kHz 16-bit WAV in memory, which is the format the
-//! speech model was tested with (finding 0002). Nothing is written to disk.
+//! speech model was tested with (finding 0002). Nothing is written to disk,
+//! except in debug builds, which keep the last recording in the temp folder
+//! for speech testing (see `export_debug_wav`).
 
 use std::io::Cursor;
 use std::sync::mpsc::{self, Receiver, Sender};
@@ -263,9 +265,60 @@ pub fn encode_wav_16k_mono(pcm: &[i16]) -> Result<Vec<u8>, String> {
     Ok(cursor.into_inner())
 }
 
+/// Debug builds only: writes the WAV to `%TEMP%/kutty-jarvis/last-recording.wav`,
+/// overwriting the previous one, and returns the path. Never fails the
+/// recording: an error is logged and `None` is returned.
+#[cfg(debug_assertions)]
+pub fn export_debug_wav(wav: &[u8]) -> Option<String> {
+    let dir = std::env::temp_dir().join("kutty-jarvis");
+    match write_last_recording(&dir, wav) {
+        Ok(path) => Some(path.to_string_lossy().into_owned()),
+        Err(error) => {
+            eprintln!("could not export the debug recording: {error}");
+            None
+        }
+    }
+}
+
+/// Release builds never write audio: this stub has no file access at all.
+#[cfg(not(debug_assertions))]
+pub fn export_debug_wav(_wav: &[u8]) -> Option<String> {
+    None
+}
+
+#[cfg(debug_assertions)]
+fn write_last_recording(dir: &std::path::Path, wav: &[u8]) -> std::io::Result<std::path::PathBuf> {
+    std::fs::create_dir_all(dir)?;
+    let path = dir.join("last-recording.wav");
+    std::fs::write(&path, wav)?;
+    Ok(path)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[cfg(debug_assertions)]
+    #[test]
+    fn debug_export_keeps_only_the_last_recording() {
+        let dir = std::env::temp_dir().join(format!("kutty-jarvis-test-{}", std::process::id()));
+        let first = encode_wav_16k_mono(&[1, 2, 3]).unwrap();
+        let second = encode_wav_16k_mono(&[4, 5]).unwrap();
+        let path = write_last_recording(&dir, &first).unwrap();
+        let again = write_last_recording(&dir, &second).unwrap();
+        assert_eq!(path, again);
+        assert_eq!(path.file_name().unwrap(), "last-recording.wav");
+        assert_eq!(std::fs::read(&path).unwrap(), second);
+        assert_eq!(std::fs::read_dir(&dir).unwrap().count(), 1);
+        std::fs::remove_dir_all(&dir).unwrap();
+    }
+
+    // Run with `cargo test --release` to exercise the release gate.
+    #[cfg(not(debug_assertions))]
+    #[test]
+    fn release_builds_never_export_audio() {
+        assert_eq!(export_debug_wav(&[0, 1, 2]), None);
+    }
 
     #[test]
     fn downmix_averages_stereo_frames() {
