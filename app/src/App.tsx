@@ -8,6 +8,7 @@ import { RecordingStatus } from "./components/RecordingStatus";
 import { PointingDebugPanel } from "./components/PointingDebugPanel";
 import { AssistantStatus } from "./components/AssistantStatus";
 import { SpeechDebugPanel } from "./components/SpeechDebugPanel";
+import { ModelSettings } from "./components/ModelSettings";
 
 function App() {
   const [greetMsg, setGreetMsg] = useState("");
@@ -25,6 +26,7 @@ function App() {
       <ScreenCaptureStatus />
       <RecordingStatus />
       <AssistantStatus />
+      <ModelSettings />
       <PointingDebugPanel />
       <SpeechDebugPanel />
 
