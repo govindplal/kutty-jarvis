@@ -26,6 +26,8 @@ tauri-plugin-global-shortcut = "2"
 xcap = "0.9"
 cpal = "0.15"
 hound = "3.5"
+ureq = { version = "3", default-features = false }
+base64 = "0.23"
 
 [target.'cfg(windows)'.dependencies]
 # UI Automation (element list) and overlay window styles. Same version Tauri
